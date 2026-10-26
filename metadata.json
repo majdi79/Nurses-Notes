@@ -1,0 +1,6 @@
+{
+  "name": "NurseChart - Clinical Nursing Note Templates",
+  "description": "Professional and concise routine, procedure, and situational nursing note templates for EHR documentation with instant customizer and one-click copy.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

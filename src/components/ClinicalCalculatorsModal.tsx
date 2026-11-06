@@ -24,12 +24,15 @@ import {
   Layers,
   Sparkles,
   Trash2,
+  Ruler,
 } from 'lucide-react';
 import {
   calculateMAP,
   convertTemp,
   calculateIVDripRate,
   convertWeight,
+  calculateBMI,
+  BMIResult,
   calculateInfusionRate,
   calculateDoseFromRate,
   calculateIVPushVolume,
@@ -61,7 +64,7 @@ export const ClinicalCalculatorsModal: React.FC<ClinicalCalculatorsModalProps> =
   activeBedLabel = 'Bed 301',
 }) => {
   const theme = THEMES[colorTheme];
-  const [activeTab, setActiveTab] = useState<'iv_drug' | 'map' | 'drip' | 'temp' | 'weight'>('iv_drug');
+  const [activeTab, setActiveTab] = useState<'iv_drug' | 'map' | 'drip' | 'temp' | 'weight' | 'bmi'>('iv_drug');
   const [copiedSnippet, setCopiedSnippet] = useState<string | null>(null);
 
   // =========================================================================
@@ -397,6 +400,15 @@ export const ClinicalCalculatorsModal: React.FC<ClinicalCalculatorsModalProps> =
   const [weightVal, setWeightVal] = useState('165');
   const [weightUnit, setWeightUnit] = useState<'lbs' | 'kg'>('lbs');
 
+  // BMI & Body Metrics State
+  const [bmiWeightVal, setBmiWeightVal] = useState('70');
+  const [bmiWeightUnit, setBmiWeightUnit] = useState<'kg' | 'lbs'>('kg');
+  const [bmiHeightMode, setBmiHeightMode] = useState<'cm' | 'ft_in'>('cm');
+  const [bmiHeightCm, setBmiHeightCm] = useState('175');
+  const [bmiHeightFeet, setBmiHeightFeet] = useState('5');
+  const [bmiHeightInches, setBmiHeightInches] = useState('9');
+  const [bmiSex, setBmiSex] = useState<'male' | 'female'>('male');
+
   if (!isOpen) return null;
 
   // Handlers for single-infusion preset selection
@@ -446,6 +458,15 @@ export const ClinicalCalculatorsModal: React.FC<ClinicalCalculatorsModalProps> =
   const tempResult = convertTemp(parseFloat(tempVal), tempUnit);
   const dripRateResult = calculateIVDripRate(parseFloat(volumeMl), parseFloat(hours), parseFloat(dropFactor));
   const weightResult = convertWeight(parseFloat(weightVal), weightUnit);
+  const bmiResult: BMIResult = calculateBMI({
+    weightVal: parseFloat(bmiWeightVal),
+    weightUnit: bmiWeightUnit,
+    heightMode: bmiHeightMode,
+    heightCm: parseFloat(bmiHeightCm),
+    heightFeet: parseFloat(bmiHeightFeet),
+    heightInches: parseFloat(bmiHeightInches),
+    sex: bmiSex,
+  });
 
   const handleInsert = (snippet: string) => {
     onInsertSnippet(snippet);
@@ -1131,6 +1152,17 @@ Mandatory Dual-RN verification on smart pump configuration, drug bag label, and 
           >
             <Scale className="w-3.5 h-3.5 text-emerald-500" />
             <span>Weight (lbs/kg)</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('bmi')}
+            className={`px-3 py-2 text-xs font-semibold border-b-2 transition-colors flex items-center gap-1.5 whitespace-nowrap ${
+              activeTab === 'bmi'
+                ? `border-blue-600 text-blue-700 dark:border-blue-400 dark:text-blue-300 font-bold`
+                : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+            }`}
+          >
+            <Ruler className="w-3.5 h-3.5 text-indigo-500" />
+            <span>BMI & Body Metrics</span>
           </button>
         </div>
 
@@ -2856,6 +2888,512 @@ Mandatory Dual-RN verification on smart pump configuration, drug bag label, and 
                   </>
                 )}
               </button>
+            </div>
+          )}
+
+          {/* =========================================================================
+              TAB 5: BMI & CLINICAL BODY METRICS
+             ========================================================================= */}
+          {activeTab === 'bmi' && (
+            <div className="space-y-4">
+              {/* Patient Parameters Header / Form */}
+              <div className="bg-slate-50 dark:bg-slate-800/60 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700/80 space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-200 dark:border-slate-700">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wide">
+                      Patient Parameters
+                    </span>
+                    <span className="text-[11px] text-slate-500">
+                      (Used for BMI, Devine IBW & Adjusted Dosing Weight)
+                    </span>
+                  </div>
+
+                  {/* Biological Sex Selector */}
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[11px] font-semibold text-slate-600 dark:text-slate-400">Sex for IBW:</span>
+                    <div className="inline-flex rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 p-0.5 text-xs font-semibold">
+                      <button
+                        type="button"
+                        onClick={() => setBmiSex('male')}
+                        className={`px-2.5 py-1 rounded-md transition-colors ${
+                          bmiSex === 'male'
+                            ? 'bg-blue-600 text-white shadow-2xs font-bold'
+                            : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'
+                        }`}
+                      >
+                        Male
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setBmiSex('female')}
+                        className={`px-2.5 py-1 rounded-md transition-colors ${
+                          bmiSex === 'female'
+                            ? 'bg-blue-600 text-white shadow-2xs font-bold'
+                            : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'
+                        }`}
+                      >
+                        Female
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Input Grid: Height & Weight */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {/* Height Input */}
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1">
+                        <Ruler className="w-3.5 h-3.5 text-indigo-500" />
+                        <span>Height</span>
+                      </label>
+                      {/* Height Mode Switcher */}
+                      <div className="inline-flex rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 p-0.5 text-[11px] font-semibold">
+                        <button
+                          type="button"
+                          onClick={() => setBmiHeightMode('cm')}
+                          className={`px-2 py-0.5 rounded transition-colors ${
+                            bmiHeightMode === 'cm'
+                              ? 'bg-indigo-600 text-white'
+                              : 'text-slate-600 dark:text-slate-400'
+                          }`}
+                        >
+                          cm
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setBmiHeightMode('ft_in')}
+                          className={`px-2 py-0.5 rounded transition-colors ${
+                            bmiHeightMode === 'ft_in'
+                              ? 'bg-indigo-600 text-white'
+                              : 'text-slate-600 dark:text-slate-400'
+                          }`}
+                        >
+                          ft / in
+                        </button>
+                      </div>
+                    </div>
+
+                    {bmiHeightMode === 'cm' ? (
+                      <div className="flex items-center gap-2">
+                        <div className="relative flex-1">
+                          <input
+                            type="number"
+                            step="0.5"
+                            min="30"
+                            max="250"
+                            value={bmiHeightCm}
+                            onChange={(e) => setBmiHeightCm(e.target.value)}
+                            className="w-full px-3 py-1.5 text-sm bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white font-mono"
+                            placeholder="175"
+                          />
+                          <span className="absolute right-3 top-2 text-xs font-semibold text-slate-400 pointer-events-none">
+                            cm
+                          </span>
+                        </div>
+                        <span className="text-xs font-mono text-slate-500 whitespace-nowrap">
+                          ≈ {Math.floor(((parseFloat(bmiHeightCm) || 0) / 2.54) / 12)}&apos;{Math.round(((parseFloat(bmiHeightCm) || 0) / 2.54) % 12)}&quot;
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="relative">
+                          <input
+                            type="number"
+                            step="1"
+                            min="1"
+                            max="8"
+                            value={bmiHeightFeet}
+                            onChange={(e) => setBmiHeightFeet(e.target.value)}
+                            className="w-full px-3 py-1.5 text-sm bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white font-mono"
+                            placeholder="5"
+                          />
+                          <span className="absolute right-3 top-2 text-xs font-semibold text-slate-400 pointer-events-none">
+                            ft
+                          </span>
+                        </div>
+                        <div className="relative">
+                          <input
+                            type="number"
+                            step="0.5"
+                            min="0"
+                            max="11.9"
+                            value={bmiHeightInches}
+                            onChange={(e) => setBmiHeightInches(e.target.value)}
+                            className="w-full px-3 py-1.5 text-sm bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white font-mono"
+                            placeholder="9"
+                          />
+                          <span className="absolute right-3 top-2 text-xs font-semibold text-slate-400 pointer-events-none">
+                            in
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Weight Input */}
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1">
+                        <Scale className="w-3.5 h-3.5 text-emerald-500" />
+                        <span>Actual Patient Weight</span>
+                      </label>
+                      {/* Weight Unit Switcher */}
+                      <div className="inline-flex rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 p-0.5 text-[11px] font-semibold">
+                        <button
+                          type="button"
+                          onClick={() => setBmiWeightUnit('kg')}
+                          className={`px-2 py-0.5 rounded transition-colors ${
+                            bmiWeightUnit === 'kg'
+                              ? 'bg-emerald-600 text-white'
+                              : 'text-slate-600 dark:text-slate-400'
+                          }`}
+                        >
+                          kg
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setBmiWeightUnit('lbs')}
+                          className={`px-2 py-0.5 rounded transition-colors ${
+                            bmiWeightUnit === 'lbs'
+                              ? 'bg-emerald-600 text-white'
+                              : 'text-slate-600 dark:text-slate-400'
+                          }`}
+                        >
+                          lbs
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <div className="relative flex-1">
+                        <input
+                          type="number"
+                          step="0.1"
+                          min="1"
+                          max="400"
+                          value={bmiWeightVal}
+                          onChange={(e) => setBmiWeightVal(e.target.value)}
+                          className="w-full px-3 py-1.5 text-sm bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white font-mono"
+                          placeholder="70"
+                        />
+                        <span className="absolute right-3 top-2 text-xs font-semibold text-slate-400 pointer-events-none">
+                          {bmiWeightUnit}
+                        </span>
+                      </div>
+                      <span className="text-xs font-mono text-slate-500 whitespace-nowrap">
+                        ≈ {bmiWeightUnit === 'kg' ? `${Math.round((parseFloat(bmiWeightVal) || 0) * 2.20462 * 10) / 10} lbs` : `${Math.round(((parseFloat(bmiWeightVal) || 0) / 2.20462) * 10) / 10} kg`}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Quick Presets / Sync with IV Weight */}
+                <div className="flex flex-wrap items-center justify-between gap-1.5 pt-1 text-[11px] text-slate-500">
+                  <div className="flex items-center gap-1">
+                    <span>Quick Height:</span>
+                    {[155, 165, 175, 185].map((presetCm) => (
+                      <button
+                        key={presetCm}
+                        type="button"
+                        onClick={() => {
+                          setBmiHeightMode('cm');
+                          setBmiHeightCm(String(presetCm));
+                        }}
+                        className="px-1.5 py-0.5 rounded bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-600 font-mono text-slate-700 dark:text-slate-200"
+                      >
+                        {presetCm}cm
+                      </button>
+                    ))}
+                  </div>
+                  {patientWeightKg && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setBmiWeightVal(patientWeightKg);
+                        setBmiWeightUnit('kg');
+                      }}
+                      className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+                    >
+                      Sync with IV Sheet Weight ({patientWeightKg} kg)
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Primary Results Display */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                {/* Main BMI Score Card */}
+                <div className={`p-4 rounded-xl border ${bmiResult.badgeBorder} ${bmiResult.badgeBg} flex flex-col justify-between`}>
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                        Body Mass Index
+                      </span>
+                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/70 dark:bg-black/30 text-slate-600 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700/60">
+                        WHO / CDC
+                      </span>
+                    </div>
+
+                    <div className="flex items-baseline gap-2 my-1">
+                      <span className={`text-4xl font-black font-mono tracking-tight ${bmiResult.categoryColor}`}>
+                        {bmiResult.bmi > 0 ? bmiResult.bmi : '—'}
+                      </span>
+                      <span className="text-xs font-bold text-slate-500 uppercase">
+                        kg / m²
+                      </span>
+                    </div>
+
+                    <div className="mt-2">
+                      <span className={`inline-block px-2.5 py-1 rounded-md text-xs font-extrabold border ${bmiResult.badgeBorder} bg-white dark:bg-slate-900 ${bmiResult.categoryColor} shadow-2xs`}>
+                        {bmiResult.categoryLabel}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="mt-3 pt-2.5 border-t border-slate-300/60 dark:border-slate-700/60 flex items-center justify-between text-[11px]">
+                    <span className="text-slate-600 dark:text-slate-400">BMI Prime:</span>
+                    <span className="font-mono font-bold text-slate-800 dark:text-slate-200">
+                      {bmiResult.bmiPrime > 0 ? bmiResult.bmiPrime : '—'}{' '}
+                      <span className="text-[10px] text-slate-500 font-normal">
+                        ({bmiResult.bmiPrime > 1 ? '>1.0 Overweight' : '≤1.0 Non-obese'})
+                      </span>
+                    </span>
+                  </div>
+                </div>
+
+                {/* Ideal Body Weight (IBW) Card */}
+                <div className="p-4 rounded-xl border border-blue-200 dark:border-blue-900/60 bg-blue-50/70 dark:bg-blue-950/30 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-xs font-bold text-blue-900 dark:text-blue-300 uppercase tracking-wider">
+                        Ideal Body Weight (IBW)
+                      </span>
+                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/70 dark:bg-black/30 text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                        Devine Formula
+                      </span>
+                    </div>
+
+                    <div className="flex items-baseline gap-2 my-1">
+                      <span className="text-3xl font-black font-mono text-blue-900 dark:text-blue-200">
+                        {bmiResult.idealBodyWeightKg > 0 ? `${bmiResult.idealBodyWeightKg} kg` : '—'}
+                      </span>
+                      <span className="text-xs text-blue-700 dark:text-blue-400 font-mono">
+                        ({bmiResult.idealBodyWeightLbs} lbs)
+                      </span>
+                    </div>
+
+                    <p className="text-[11px] text-blue-800/80 dark:text-blue-300/80 mt-1.5 leading-relaxed">
+                      Standard for ARDSnet protective mechanical ventilation tidal volume (6 mL/kg PBW) & Cockcroft-Gault CrCl.
+                    </p>
+                  </div>
+
+                  <div className="mt-3 pt-2.5 border-t border-blue-200 dark:border-blue-800/60 text-[11px] text-blue-700 dark:text-blue-400 flex items-center justify-between">
+                    <span>Sex Parameter:</span>
+                    <span className="font-semibold uppercase tracking-wider">{bmiSex} ({bmiSex === 'male' ? '50 kg base' : '45.5 kg base'})</span>
+                  </div>
+                </div>
+
+                {/* Adjusted Body Weight (AdjBW) Card */}
+                <div className="p-4 rounded-xl border border-amber-200 dark:border-amber-900/60 bg-amber-50/70 dark:bg-amber-950/30 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-xs font-bold text-amber-900 dark:text-amber-300 uppercase tracking-wider">
+                        Adjusted Weight (AdjBW)
+                      </span>
+                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/70 dark:bg-black/30 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                        0.4 Correction
+                      </span>
+                    </div>
+
+                    <div className="flex items-baseline gap-2 my-1">
+                      {bmiResult.adjustedBodyWeightKg !== null ? (
+                        <>
+                          <span className="text-3xl font-black font-mono text-amber-900 dark:text-amber-200">
+                            {bmiResult.adjustedBodyWeightKg} kg
+                          </span>
+                          <span className="text-xs text-amber-700 dark:text-amber-400 font-mono">
+                            ({bmiResult.adjustedBodyWeightLbs} lbs)
+                          </span>
+                        </>
+                      ) : (
+                        <span className="text-sm font-semibold text-amber-800 dark:text-amber-300 py-1">
+                          Not Indicated (Wt ≤ 120% IBW)
+                        </span>
+                      )}
+                    </div>
+
+                    <p className="text-[11px] text-amber-800/80 dark:text-amber-300/80 mt-1.5 leading-relaxed">
+                      {bmiResult.adjustedBodyWeightKg !== null
+                        ? 'Indicated for hydrophilic drug dosing (Aminoglycosides, Vancomycin, Acyclovir) to prevent toxicity.'
+                        : 'Actual weight is within normal proximity of IBW. Use actual or ideal body weight per protocol.'}
+                    </p>
+                  </div>
+
+                  <div className="mt-3 pt-2.5 border-t border-amber-200 dark:border-amber-800/60 text-[11px] text-amber-800 dark:text-amber-300 flex items-center justify-between">
+                    <span>Formula:</span>
+                    <span className="font-mono text-[10px]">IBW + 0.4 × (Actual − IBW)</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Visual BMI Gauge & Spectrum Bar */}
+              <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 space-y-2">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-bold text-slate-800 dark:text-slate-200">
+                    WHO Weight Classification Spectrum
+                  </span>
+                  <span className="font-mono font-bold text-slate-600 dark:text-slate-400">
+                    Patient: {bmiResult.bmi > 0 ? `${bmiResult.bmi} kg/m²` : '—'}
+                  </span>
+                </div>
+
+                {/* Multi-segment Color Spectrum Bar */}
+                <div className="relative pt-2 pb-1">
+                  <div className="h-4 w-full rounded-full overflow-hidden flex shadow-inner">
+                    <div
+                      className="bg-sky-400 h-full transition-all"
+                      style={{ width: '18.5%' }}
+                      title="Underweight (<18.5)"
+                    />
+                    <div
+                      className="bg-emerald-500 h-full transition-all"
+                      style={{ width: '25%' }}
+                      title="Normal (18.5 - 24.9)"
+                    />
+                    <div
+                      className="bg-amber-400 h-full transition-all"
+                      style={{ width: '20%' }}
+                      title="Overweight (25.0 - 29.9)"
+                    />
+                    <div
+                      className="bg-orange-500 h-full transition-all"
+                      style={{ width: '16.5%' }}
+                      title="Obese Class I (30.0 - 34.9)"
+                    />
+                    <div
+                      className="bg-rose-500 h-full transition-all"
+                      style={{ width: '10%' }}
+                      title="Obese Class II (35.0 - 39.9)"
+                    />
+                    <div
+                      className="bg-purple-600 h-full transition-all"
+                      style={{ width: '10%' }}
+                      title="Obese Class III (≥40.0)"
+                    />
+                  </div>
+
+                  {/* Range Labels underneath spectrum */}
+                  <div className="flex justify-between text-[10px] text-slate-500 mt-1 font-mono">
+                    <span>&lt;18.5 Under</span>
+                    <span>18.5 Normal</span>
+                    <span>25.0 Over</span>
+                    <span>30.0 Class I</span>
+                    <span>35.0 Class II</span>
+                    <span>≥40 Class III</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Healthy Weight Target Range & Clinical Interpretation */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {/* Healthy Range for this height */}
+                <div className="p-3.5 rounded-xl border border-emerald-200 dark:border-emerald-800/60 bg-emerald-50/50 dark:bg-emerald-950/20">
+                  <div className="flex items-center gap-2 mb-1.5 text-emerald-900 dark:text-emerald-300">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                    <span className="text-xs font-bold uppercase tracking-wider">
+                      Healthy Target Weight Range (BMI 18.5 – 24.9)
+                    </span>
+                  </div>
+                  <div className="text-lg font-black font-mono text-emerald-950 dark:text-emerald-100">
+                    {bmiResult.healthyWeightRangeKg.min > 0
+                      ? `${bmiResult.healthyWeightRangeKg.min} – ${bmiResult.healthyWeightRangeKg.max} kg`
+                      : '—'}
+                  </div>
+                  <div className="text-xs font-mono text-emerald-800 dark:text-emerald-300 mt-0.5">
+                    {bmiResult.healthyWeightRangeLbs.min > 0
+                      ? `(${bmiResult.healthyWeightRangeLbs.min} – ${bmiResult.healthyWeightRangeLbs.max} lbs)`
+                      : ''}
+                  </div>
+                  <p className="text-[11px] text-emerald-800/80 dark:text-emerald-400/80 mt-1.5">
+                    Calculated for patient height {bmiResult.heightDisplay || 'entered above'}.
+                  </p>
+                </div>
+
+                {/* Clinical Interpretation & Nursing Alerts */}
+                <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
+                  <div className="flex items-center gap-2 mb-1.5 text-slate-800 dark:text-slate-200">
+                    <Info className="w-4 h-4 text-blue-500" />
+                    <span className="text-xs font-bold uppercase tracking-wider">
+                      Bedside Nursing Assessment
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-sans">
+                    {bmiResult.clinicalInterpretation}
+                  </p>
+                  <div className="mt-2 text-[10px] text-slate-500 flex items-center gap-1.5">
+                    <ShieldCheck className="w-3.5 h-3.5 text-blue-500" />
+                    <span>Cross-reference with patient fluid status, edema, and amputation adjustments.</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons: Insert into Note & Copy Summary */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const snippet = `BMI: ${bmiResult.bmi} kg/m² (${bmiResult.categoryLabel}) | Ht: ${bmiResult.heightDisplay} | Wt: ${bmiResult.weightKg} kg (${bmiResult.weightLbs} lbs) | IBW: ${bmiResult.idealBodyWeightKg} kg (${bmiResult.idealBodyWeightLbs} lbs)${
+                      bmiResult.adjustedBodyWeightKg ? ` | AdjBW: ${bmiResult.adjustedBodyWeightKg} kg` : ''
+                    } | Healthy Target: ${bmiResult.healthyWeightRangeKg.min}-${bmiResult.healthyWeightRangeKg.max} kg`;
+                    handleInsert(snippet);
+                  }}
+                  className={`py-2 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 shadow-2xs transition-colors ${theme.primaryBtn}`}
+                >
+                  {copiedSnippet ? (
+                    <>
+                      <Check className="w-3.5 h-3.5" />
+                      <span>Inserted BMI into Patient Note!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Insert BMI & Dosing Weights into Note</span>
+                    </>
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={async () => {
+                    const text = `=======================================================
+PATIENT BEDSIDE BODY METRICS & DOSING RECORD
+=======================================================
+Height: ${bmiResult.heightDisplay}
+Weight: ${bmiResult.weightKg} kg (${bmiResult.weightLbs} lbs)
+Sex Parameter: ${bmiSex.toUpperCase()}
+-------------------------------------------------------
+BMI: ${bmiResult.bmi} kg/m² [${bmiResult.categoryLabel}]
+BMI Prime: ${bmiResult.bmiPrime}
+Ideal Body Weight (IBW - Devine): ${bmiResult.idealBodyWeightKg} kg (${bmiResult.idealBodyWeightLbs} lbs)
+Adjusted Body Weight (AdjBW): ${bmiResult.adjustedBodyWeightKg ? `${bmiResult.adjustedBodyWeightKg} kg (${bmiResult.adjustedBodyWeightLbs} lbs)` : 'Not indicated (≤120% IBW)'}
+Healthy Weight Target (BMI 18.5-24.9): ${bmiResult.healthyWeightRangeKg.min} - ${bmiResult.healthyWeightRangeKg.max} kg (${bmiResult.healthyWeightRangeLbs.min} - ${bmiResult.healthyWeightRangeLbs.max} lbs)
+Clinical Assessment: ${bmiResult.clinicalInterpretation}
+=======================================================`;
+                    try {
+                      await navigator.clipboard.writeText(text);
+                      setCopiedTableToast('Copied full Body Metrics record to clipboard!');
+                      setTimeout(() => setCopiedTableToast(null), 2200);
+                    } catch {
+                      // fallback
+                    }
+                  }}
+                  className="py-2 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors shadow-2xs"
+                >
+                  <Copy className="w-3.5 h-3.5" />
+                  <span>Copy Body Metrics Summary</span>
+                </button>
+              </div>
             </div>
           )}
         </div>

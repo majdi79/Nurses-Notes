@@ -74,6 +74,226 @@ export function convertWeight(val: number, from: 'lbs' | 'kg'): { lbs: number; k
   return { lbs, kg: Math.round(val * 10) / 10 };
 }
 
+/**
+ * Body Mass Index (BMI), Ideal Body Weight (IBW), and Adjusted Body Weight (AdjBW)
+ * Adheres to WHO/CDC thresholds and Devine clinical formula.
+ */
+export type BMICategory =
+  | 'underweight_severe'
+  | 'underweight_moderate'
+  | 'underweight_mild'
+  | 'normal'
+  | 'overweight'
+  | 'obesity_class_1'
+  | 'obesity_class_2'
+  | 'obesity_class_3';
+
+export interface BMIResult {
+  bmi: number;
+  category: BMICategory;
+  categoryLabel: string;
+  categoryColor: string;
+  badgeBg: string;
+  badgeBorder: string;
+  clinicalInterpretation: string;
+  weightKg: number;
+  weightLbs: number;
+  heightCm: number;
+  heightInches: number;
+  heightDisplay: string;
+  idealBodyWeightKg: number;
+  idealBodyWeightLbs: number;
+  adjustedBodyWeightKg: number | null;
+  adjustedBodyWeightLbs: number | null;
+  healthyWeightRangeKg: { min: number; max: number };
+  healthyWeightRangeLbs: { min: number; max: number };
+  bmiPrime: number;
+}
+
+export function calculateBMI(params: {
+  weightVal: number;
+  weightUnit: 'kg' | 'lbs';
+  heightMode: 'cm' | 'ft_in';
+  heightCm?: number;
+  heightFeet?: number;
+  heightInches?: number;
+  sex?: 'male' | 'female';
+}): BMIResult {
+  const { weightVal, weightUnit, heightMode, heightCm = 0, heightFeet = 0, heightInches = 0, sex = 'male' } = params;
+
+  // Convert weight to kg and lbs
+  let weightKg = 0;
+  let weightLbs = 0;
+  if (!isNaN(weightVal) && weightVal > 0) {
+    if (weightUnit === 'kg') {
+      weightKg = Math.round(weightVal * 10) / 10;
+      weightLbs = Math.round(weightVal * 2.20462 * 10) / 10;
+    } else {
+      weightLbs = Math.round(weightVal * 10) / 10;
+      weightKg = Math.round((weightVal / 2.20462) * 10) / 10;
+    }
+  }
+
+  // Convert height to cm, meters, and inches
+  let totalCm = 0;
+  let totalInches = 0;
+  let heightDisplay = '';
+
+  if (heightMode === 'cm') {
+    totalCm = !isNaN(heightCm) && heightCm > 0 ? heightCm : 0;
+    totalInches = Math.round((totalCm / 2.54) * 10) / 10;
+    const feet = Math.floor(totalInches / 12);
+    const inchesRemainder = Math.round(totalInches % 12);
+    heightDisplay = `${totalCm} cm (${feet}'${inchesRemainder}")`;
+  } else {
+    const feet = !isNaN(heightFeet) && heightFeet >= 0 ? heightFeet : 0;
+    const inch = !isNaN(heightInches) && heightInches >= 0 ? heightInches : 0;
+    totalInches = feet * 12 + inch;
+    totalCm = Math.round(totalInches * 2.54 * 10) / 10;
+    heightDisplay = `${feet}'${inch}" (${totalCm} cm)`;
+  }
+
+  const heightMeters = totalCm / 100;
+
+  if (weightKg <= 0 || heightMeters <= 0) {
+    return {
+      bmi: 0,
+      category: 'normal',
+      categoryLabel: 'Awaiting Height & Weight',
+      categoryColor: 'text-slate-500',
+      badgeBg: 'bg-slate-100 dark:bg-slate-800',
+      badgeBorder: 'border-slate-300 dark:border-slate-700',
+      clinicalInterpretation: 'Enter valid patient height and weight to calculate bedside BMI and dosing body weights.',
+      weightKg: 0,
+      weightLbs: 0,
+      heightCm: 0,
+      heightInches: 0,
+      heightDisplay: '0 cm',
+      idealBodyWeightKg: 0,
+      idealBodyWeightLbs: 0,
+      adjustedBodyWeightKg: null,
+      adjustedBodyWeightLbs: null,
+      healthyWeightRangeKg: { min: 0, max: 0 },
+      healthyWeightRangeLbs: { min: 0, max: 0 },
+      bmiPrime: 0,
+    };
+  }
+
+  const rawBmi = weightKg / (heightMeters * heightMeters);
+  const bmi = Math.round(rawBmi * 10) / 10;
+  const bmiPrime = Math.round((bmi / 25.0) * 100) / 100;
+
+  // WHO / CDC Category
+  let category: BMICategory = 'normal';
+  let categoryLabel = 'Normal Weight';
+  let categoryColor = 'text-emerald-700 dark:text-emerald-300';
+  let badgeBg = 'bg-emerald-50 dark:bg-emerald-950/50';
+  let badgeBorder = 'border-emerald-300 dark:border-emerald-700';
+  let clinicalInterpretation = 'Healthy adult weight range (BMI 18.5 – 24.9). Standard clinical and metabolic risk.';
+
+  if (bmi < 16.0) {
+    category = 'underweight_severe';
+    categoryLabel = 'Severe Underweight (Severe Thinness)';
+    categoryColor = 'text-sky-700 dark:text-sky-300';
+    badgeBg = 'bg-sky-50 dark:bg-sky-950/60';
+    badgeBorder = 'border-sky-300 dark:border-sky-700';
+    clinicalInterpretation = 'Severe malnutrition risk. High risk of electrolyte imbalance, refeeding syndrome, and impaired skin integrity.';
+  } else if (bmi < 17.0) {
+    category = 'underweight_moderate';
+    categoryLabel = 'Moderate Underweight';
+    categoryColor = 'text-sky-700 dark:text-sky-300';
+    badgeBg = 'bg-sky-50 dark:bg-sky-950/60';
+    badgeBorder = 'border-sky-300 dark:border-sky-700';
+    clinicalInterpretation = 'Moderate underweight. Assess nutritional intake, MUST score, and Braden pressure injury risk.';
+  } else if (bmi < 18.5) {
+    category = 'underweight_mild';
+    categoryLabel = 'Mild Underweight';
+    categoryColor = 'text-sky-600 dark:text-sky-400';
+    badgeBg = 'bg-sky-50 dark:bg-sky-950/50';
+    badgeBorder = 'border-sky-200 dark:border-sky-800';
+    clinicalInterpretation = 'Mild underweight. Evaluate clinical nutrition and unintentional weight loss history.';
+  } else if (bmi < 25.0) {
+    category = 'normal';
+    categoryLabel = 'Normal Weight';
+    categoryColor = 'text-emerald-700 dark:text-emerald-300';
+    badgeBg = 'bg-emerald-50 dark:bg-emerald-950/50';
+    badgeBorder = 'border-emerald-300 dark:border-emerald-700';
+    clinicalInterpretation = 'Healthy adult weight range (BMI 18.5 – 24.9). Standard physiological and metabolic baseline.';
+  } else if (bmi < 30.0) {
+    category = 'overweight';
+    categoryLabel = 'Overweight (Pre-obese)';
+    categoryColor = 'text-amber-700 dark:text-amber-300';
+    badgeBg = 'bg-amber-50 dark:bg-amber-950/50';
+    badgeBorder = 'border-amber-300 dark:border-amber-700';
+    clinicalInterpretation = 'Overweight range (BMI 25.0 – 29.9). Screen for hypertension, glucose intolerance, and obstructive sleep apnea.';
+  } else if (bmi < 35.0) {
+    category = 'obesity_class_1';
+    categoryLabel = 'Obesity Class I';
+    categoryColor = 'text-orange-700 dark:text-orange-300';
+    badgeBg = 'bg-orange-50 dark:bg-orange-950/50';
+    badgeBorder = 'border-orange-300 dark:border-orange-700';
+    clinicalInterpretation = 'Obesity Class I (BMI 30.0 – 34.9). Consider Adjusted Body Weight (AdjBW) for hydrophilic medication dosing.';
+  } else if (bmi < 40.0) {
+    category = 'obesity_class_2';
+    categoryLabel = 'Obesity Class II (Severe)';
+    categoryColor = 'text-rose-700 dark:text-rose-300';
+    badgeBg = 'bg-rose-50 dark:bg-rose-950/50';
+    badgeBorder = 'border-rose-300 dark:border-rose-700';
+    clinicalInterpretation = 'Obesity Class II (BMI 35.0 – 39.9). Higher airway difficulty, DVT prophylaxis, and specialized bariatric equipment recommended.';
+  } else {
+    category = 'obesity_class_3';
+    categoryLabel = 'Obesity Class III (Morbid)';
+    categoryColor = 'text-purple-700 dark:text-purple-300';
+    badgeBg = 'bg-purple-50 dark:bg-purple-950/50';
+    badgeBorder = 'border-purple-300 dark:border-purple-700';
+    clinicalInterpretation = 'Obesity Class III (BMI ≥ 40.0). High airway/intubation risk, specialized dosing protocols, and bariatric pressure ulcer prevention mandatory.';
+  }
+
+  // Ideal Body Weight (Devine Formula)
+  // Men: 50 kg + 2.3 kg per inch over 5 feet (60 inches)
+  // Women: 45.5 kg + 2.3 kg per inch over 5 feet
+  const baseIbw = sex === 'female' ? 45.5 : 50.0;
+  const inchesOver60 = Math.max(0, totalInches - 60);
+  const idealBodyWeightKg = Math.round((baseIbw + 2.3 * inchesOver60) * 10) / 10;
+  const idealBodyWeightLbs = Math.round(idealBodyWeightKg * 2.20462 * 10) / 10;
+
+  // Adjusted Body Weight (AdjBW) - clinical threshold when actual weight > 120% of IBW
+  let adjustedBodyWeightKg: number | null = null;
+  let adjustedBodyWeightLbs: number | null = null;
+  if (weightKg > idealBodyWeightKg * 1.2 || bmi >= 30.0) {
+    adjustedBodyWeightKg = Math.round((idealBodyWeightKg + 0.4 * (weightKg - idealBodyWeightKg)) * 10) / 10;
+    adjustedBodyWeightLbs = Math.round(adjustedBodyWeightKg * 2.20462 * 10) / 10;
+  }
+
+  // Healthy Weight Range for this height (BMI 18.5 - 24.9)
+  const minHealthyKg = Math.round(18.5 * heightMeters * heightMeters * 10) / 10;
+  const maxHealthyKg = Math.round(24.9 * heightMeters * heightMeters * 10) / 10;
+  const minHealthyLbs = Math.round(minHealthyKg * 2.20462 * 10) / 10;
+  const maxHealthyLbs = Math.round(maxHealthyKg * 2.20462 * 10) / 10;
+
+  return {
+    bmi,
+    category,
+    categoryLabel,
+    categoryColor,
+    badgeBg,
+    badgeBorder,
+    clinicalInterpretation,
+    weightKg,
+    weightLbs,
+    heightCm: Math.round(totalCm * 10) / 10,
+    heightInches: Math.round(totalInches * 10) / 10,
+    heightDisplay,
+    idealBodyWeightKg,
+    idealBodyWeightLbs,
+    adjustedBodyWeightKg,
+    adjustedBodyWeightLbs,
+    healthyWeightRangeKg: { min: minHealthyKg, max: maxHealthyKg },
+    healthyWeightRangeLbs: { min: minHealthyLbs, max: maxHealthyLbs },
+    bmiPrime,
+  };
+}
+
 /* =========================================================================
    IV DRUG INFUSION & DOSING CALCULATIONS
    ========================================================================= */

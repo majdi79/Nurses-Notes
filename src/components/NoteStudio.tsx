@@ -213,9 +213,19 @@ export const NoteStudio: React.FC<NoteStudioProps> = ({
   };
 
   const handlePrint = () => {
+    let styleEl = document.getElementById('print-orientation-style') as HTMLStyleElement | null;
+    if (!styleEl) {
+      styleEl = document.createElement('style');
+      styleEl.id = 'print-orientation-style';
+      document.head.appendChild(styleEl);
+    }
+    // W3C CSS Paged Media forbids !important in @page rules
+    styleEl.innerHTML = '@page { size: A4 portrait; margin: 10mm 12mm; } html, body { width: 210mm !important; } #printable-note-portal { width: 194mm !important; }';
+
     document.body.classList.add('printing-note');
     const cleanup = () => {
       document.body.classList.remove('printing-note');
+      styleEl?.remove();
       window.removeEventListener('afterprint', cleanup);
     };
     window.addEventListener('afterprint', cleanup);
@@ -226,7 +236,8 @@ export const NoteStudio: React.FC<NoteStudioProps> = ({
     }
     setTimeout(() => {
       document.body.classList.remove('printing-note');
-    }, 2500);
+      styleEl?.remove();
+    }, 120000);
   };
 
   const handleDownload = () => {
@@ -414,9 +425,7 @@ export const NoteStudio: React.FC<NoteStudioProps> = ({
               <button
                 type="button"
                 onClick={() => {
-                  if (confirm(`Restore "${template.title}" back to system default? Any customized variables and phrasing will be reset.`)) {
-                    onRestoreTemplate(template.id);
-                  }
+                  onRestoreTemplate(template.id);
                 }}
                 className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-amber-800 dark:text-amber-300 hover:text-amber-950 dark:hover:text-amber-100 bg-amber-100/90 dark:bg-amber-950/70 hover:bg-amber-200 rounded-lg transition-colors border border-amber-300/80 dark:border-amber-800/80 shadow-2xs"
                 title="Restore this template back to factory hospital standard"

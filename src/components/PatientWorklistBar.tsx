@@ -125,9 +125,7 @@ export const PatientWorklistBar: React.FC<PatientWorklistBarProps> = ({
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation();
-                          if (confirm(`Remove "${slot.bedLabel}" from active shift list?`)) {
-                            onRemoveSlot(slot.id);
-                          }
+                          onRemoveSlot(slot.id);
                         }}
                         className="p-0.5 hover:text-rose-500 rounded"
                         title="Remove patient slot"

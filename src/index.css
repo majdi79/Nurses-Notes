@@ -38,12 +38,11 @@
 
 @media print {
   @page {
-    size: A4 portrait;
-    margin: 6mm 8mm;
+    size: A4 landscape;
+    margin: 5mm 6mm;
   }
 
   html, body {
-    width: 210mm !important;
     height: auto !important;
     background: #ffffff !important;
     color: #0f172a !important;
@@ -53,16 +52,21 @@
     padding: 0 !important;
   }
 
-  /* When printing an IV administration sheet */
-  body.printing-iv-sheet #root {
+  /* When printing an IV administration sheet (A4 Landscape) */
+  body.printing-iv-sheet {
+    width: 297mm !important;
+  }
+
+  body.printing-iv-sheet #root,
+  body.printing-iv-sheet #printable-note-portal {
     display: none !important;
   }
 
   body.printing-iv-sheet #printable-iv-portal {
     display: block !important;
     position: static !important;
-    width: 194mm !important;
-    max-width: 194mm !important;
+    width: 284mm !important;
+    max-width: 284mm !important;
     margin: 0 auto !important;
     padding: 0 !important;
     background: #ffffff !important;
@@ -71,8 +75,13 @@
     break-after: avoid !important;
   }
 
-  /* When printing a clinical nursing note */
-  body.printing-note #root {
+  /* When printing a clinical nursing note (A4 Portrait) */
+  body.printing-note {
+    width: 210mm !important;
+  }
+
+  body.printing-note #root,
+  body.printing-note #printable-iv-portal {
     display: none !important;
   }
 

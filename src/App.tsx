@@ -518,34 +518,30 @@ export default function App() {
       return;
     }
 
-    if (confirm(`Restore all ${count} customized templates back to hospital defaults? This cannot be undone.`)) {
-      setModifiedTemplates({});
-      if (isDefaultTemplateId(selectedTemplate.id)) {
-        const pristine = getInitialTemplateById(selectedTemplate.id);
-        if (pristine) {
-          setSelectedTemplate(pristine);
-          const defaults: Record<string, string> = {};
-          pristine.fields.forEach((f) => {
-            defaults[f.id] = f.defaultValue;
-          });
-          setFieldValues(defaults);
-          setManualText(null);
-        }
+    setModifiedTemplates({});
+    if (isDefaultTemplateId(selectedTemplate.id)) {
+      const pristine = getInitialTemplateById(selectedTemplate.id);
+      if (pristine) {
+        setSelectedTemplate(pristine);
+        const defaults: Record<string, string> = {};
+        pristine.fields.forEach((f) => {
+          defaults[f.id] = f.defaultValue;
+        });
+        setFieldValues(defaults);
+        setManualText(null);
       }
-      setToastMessage('All templates restored to system defaults');
-      setTimeout(() => setToastMessage(null), 2500);
     }
+    setToastMessage('All templates restored to system defaults');
+    setTimeout(() => setToastMessage(null), 2500);
   };
 
   const handleDeleteCustomTemplate = (templateId: string) => {
-    if (confirm('Delete this custom template?')) {
-      setCustomTemplates((prev) => prev.filter((t) => t.id !== templateId));
-      if (selectedTemplate.id === templateId) {
-        setSelectedTemplate(INITIAL_TEMPLATES[0]);
-      }
-      setToastMessage('Template deleted');
-      setTimeout(() => setToastMessage(null), 2000);
+    setCustomTemplates((prev) => prev.filter((t) => t.id !== templateId));
+    if (selectedTemplate.id === templateId) {
+      setSelectedTemplate(INITIAL_TEMPLATES[0]);
     }
+    setToastMessage('Template deleted');
+    setTimeout(() => setToastMessage(null), 2000);
   };
 
   return (

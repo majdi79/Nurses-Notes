@@ -582,9 +582,7 @@ export const TemplateSelector: React.FC<TemplateSelectorProps> = ({
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (confirm(`Restore "${tpl.title}" back to system default?`)) {
-                    onRestoreTemplate(tpl.id);
-                  }
+                  onRestoreTemplate(tpl.id);
                 }}
                 title="Restore this template back to factory hospital default"
                 className="p-1.5 rounded-md text-amber-600 dark:text-amber-400 hover:text-amber-700 hover:bg-amber-50 dark:hover:bg-amber-950/60 transition-colors"

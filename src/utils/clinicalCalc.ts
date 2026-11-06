@@ -12,6 +12,9 @@ export function calculateMAP(sbp: number, dbp: number): { map: number; status: '
   if (isNaN(sbp) || isNaN(dbp) || sbp <= 0 || dbp <= 0) {
     return { map: 0, status: 'normal', message: 'Enter valid SBP and DBP' };
   }
+  if (sbp <= dbp) {
+    return { map: 0, status: 'critical_low', message: 'Invalid hemodynamics: Systolic (SBP) must be greater than Diastolic (DBP)' };
+  }
   const map = Math.round(((sbp + 2 * dbp) / 3) * 10) / 10;
   
   if (map < 60) {
@@ -81,6 +84,7 @@ export type InfusionDoseRateUnit =
   | 'mcg/min'
   | 'mcg/kg/hr'
   | 'mcg/hr'
+  | 'mg/min'
   | 'mg/kg/hr'
   | 'mg/hr'
   | 'units/kg/hr'
@@ -343,7 +347,7 @@ export function calculateInfusionRate(params: {
     isNaN(desiredDose) ||
     drugAmount <= 0 ||
     bagVolumeMl <= 0 ||
-    desiredDose <= 0
+    desiredDose < 0
   ) {
     return {
       rateMlHr: 0,
@@ -406,6 +410,13 @@ export function calculateInfusionRate(params: {
       rateMlHr = concentrationMcgPerMl > 0 ? desiredDose / concentrationMcgPerMl : 0;
       hourlyDoseDisplay = `${desiredDose} mcg/hr`;
       concentrationDisplay = `${Math.round(concentrationMcgPerMl * 100) / 100} mcg/mL`;
+      break;
+    }
+    case 'mg/min': {
+      const mgPerHour = desiredDose * 60;
+      rateMlHr = concentrationMgPerMl > 0 ? mgPerHour / concentrationMgPerMl : 0;
+      hourlyDoseDisplay = `${Math.round(mgPerHour * 100) / 100} mg/hr`;
+      concentrationDisplay = `${Math.round(concentrationMgPerMl * 1000) / 1000} mg/mL`;
       break;
     }
     case 'mg/kg/hr': {
@@ -511,6 +522,11 @@ export function calculateDoseFromRate(params: {
     }
     case 'mcg/hr': {
       dose = rateMlHr * concentrationMcgPerMl;
+      break;
+    }
+    case 'mg/min': {
+      const mgPerHour = rateMlHr * concentrationMgPerMl;
+      dose = mgPerHour / 60;
       break;
     }
     case 'mg/kg/hr': {
@@ -621,7 +637,7 @@ export function generateTitrationLadder(params: {
     isNaN(maxDose) ||
     drugAmount <= 0 ||
     bagVolumeMl <= 0 ||
-    minDose <= 0 ||
+    minDose < 0 ||
     maxDose <= 0
   ) {
     return {

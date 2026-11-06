@@ -278,12 +278,10 @@ export const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
     const pristine = getInitialTemplateById(template.id);
     if (!pristine) return;
 
-    if (confirm(`Reset "${template.title}" back to the original hospital system default? All your custom modifications to this template will be reverted.`)) {
-      if (onRestoreDefault) {
-        onRestoreDefault(template.id);
-      }
-      onClose();
+    if (onRestoreDefault) {
+      onRestoreDefault(template.id);
     }
+    onClose();
   };
 
   // Compile active draft template for preview

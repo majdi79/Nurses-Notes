@@ -454,9 +454,19 @@ export const ClinicalCalculatorsModal: React.FC<ClinicalCalculatorsModalProps> =
   };
 
   const handlePrintAdminSheet = () => {
+    let styleEl = document.getElementById('print-orientation-style') as HTMLStyleElement | null;
+    if (!styleEl) {
+      styleEl = document.createElement('style');
+      styleEl.id = 'print-orientation-style';
+      document.head.appendChild(styleEl);
+    }
+    // W3C CSS Paged Media forbids !important in @page rules; using !important causes browsers to ignore the rule.
+    styleEl.innerHTML = '@page { size: A4 landscape; margin: 5mm 6mm; } html, body { width: 297mm !important; } #printable-iv-portal { width: 284mm !important; max-width: 284mm !important; }';
+
     document.body.classList.add('printing-iv-sheet');
     const cleanup = () => {
       document.body.classList.remove('printing-iv-sheet');
+      styleEl?.remove();
       window.removeEventListener('afterprint', cleanup);
     };
     window.addEventListener('afterprint', cleanup);
@@ -467,52 +477,53 @@ export const ClinicalCalculatorsModal: React.FC<ClinicalCalculatorsModalProps> =
     }
     setTimeout(() => {
       document.body.classList.remove('printing-iv-sheet');
-    }, 2000);
+      styleEl?.remove();
+    }, 120000);
   };
 
   const getIcuMasterSheetText = () => {
     const ptWt = parseFloat(patientWeightKg) || 50;
     return `================================================================================
-INSTANT INFUSION CALCULATOR · ICU MASTER BEDSIDE TITRATION SHEET (A4)
+INSTANT INFUSION CALCULATOR · ICU MASTER BEDSIDE TITRATION SHEET (A4 LANDSCAPE)
 Patient: ${patientName || 'N/A'} | CPR/MRN: ${patientCpr || 'N/A'} | Weight: ${ptWt} kg (${Math.round(ptWt * 2.20462)} lbs) | Bed: ${patientBed}
 Date: ${new Date().toLocaleDateString('en-GB')} | Time: ${new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })}
 ================================================================================
 
 [1] NOR EPINEPHRINE (16 mg in 50 mL = 320 mcg/mL) · Non-weight based (mcg/min)
-Dose (mcg/min): 0.5 | 1.0 | 2.0 | 3.0 | 4.0 | 5.0 | 6.0 | 7.0 | 8.0 | 9.0 | 10  | 12  | 15  | 20  | 25  | 30
-Rate (mL/hr)  : 0.1 | 0.2 | 0.4 | 0.6 | 0.8 | 0.9 | 1.1 | 1.3 | 1.5 | 1.7 | 1.9 | 2.3 | 2.8 | 3.8 | 4.7 | 5.6
+Dose (mcg/min): 0.5 | 1.0 | 2.0 | 4.0 | 6.0 | 8.0 | 10  | 12  | 15  | 18  | 20  | 25  | 30
+Rate (mL/hr)  : 0.1 | 0.2 | 0.4 | 0.8 | 1.1 | 1.5 | 1.9 | 2.3 | 2.8 | 3.4 | 3.8 | 4.7 | 5.6
 
 [2] EPINEPHRINE (10 mg in 50 mL = 200 mcg/mL) · Weight-adjusted (${ptWt} kg)
-Dose (mcg/kg/min): 0.1 | 0.2 | 0.3 | 0.4 | 0.5 | 0.6 | 0.7  | 0.8  | 0.9  | 1.0
-Rate (mL/hr)     : ${((0.1*ptWt*60)/200).toFixed(1)} | ${((0.2*ptWt*60)/200).toFixed(1)} | ${((0.3*ptWt*60)/200).toFixed(1)} | ${((0.4*ptWt*60)/200).toFixed(1)} | ${((0.5*ptWt*60)/200).toFixed(1)} | ${((0.6*ptWt*60)/200).toFixed(1)} | ${((0.7*ptWt*60)/200).toFixed(1)} | ${((0.8*ptWt*60)/200).toFixed(1)} | ${((0.9*ptWt*60)/200).toFixed(1)} | ${((1.0*ptWt*60)/200).toFixed(1)}
+Dose (mcg/kg/min): 0.1 | 0.2 | 0.3 | 0.4 | 0.5 | 0.6 | 0.8 | 1.0
+Rate (mL/hr)     : ${((0.1*ptWt*60)/200).toFixed(1)} | ${((0.2*ptWt*60)/200).toFixed(1)} | ${((0.3*ptWt*60)/200).toFixed(1)} | ${((0.4*ptWt*60)/200).toFixed(1)} | ${((0.5*ptWt*60)/200).toFixed(1)} | ${((0.6*ptWt*60)/200).toFixed(1)} | ${((0.8*ptWt*60)/200).toFixed(1)} | ${((1.0*ptWt*60)/200).toFixed(1)}
 
 [3] DOPAMINE (800 mg in 250 mL = 3200 mcg/mL) · Weight-adjusted (${ptWt} kg)
-Dose (mcg/kg/min): 1.0 | 2.5 | 5.0 | 7.5  | 10.0 | 12.5 | 15.0 | 17.5 | 20.0
-Rate (mL/hr)     : ${((1.0*ptWt*60)/3200).toFixed(1)} | ${((2.5*ptWt*60)/3200).toFixed(1)} | ${((5.0*ptWt*60)/3200).toFixed(1)} | ${((7.5*ptWt*60)/3200).toFixed(1)} | ${((10.0*ptWt*60)/3200).toFixed(1)} | ${((12.5*ptWt*60)/3200).toFixed(1)} | ${((15.0*ptWt*60)/3200).toFixed(1)} | ${((17.5*ptWt*60)/3200).toFixed(1)} | ${((20.0*ptWt*60)/3200).toFixed(1)}
+Dose (mcg/kg/min): 2.5 | 5.0 | 7.5  | 10.0 | 12.5 | 15.0 | 17.5 | 20.0
+Rate (mL/hr)     : ${((2.5*ptWt*60)/3200).toFixed(1)} | ${((5.0*ptWt*60)/3200).toFixed(1)} | ${((7.5*ptWt*60)/3200).toFixed(1)} | ${((10.0*ptWt*60)/3200).toFixed(1)} | ${((12.5*ptWt*60)/3200).toFixed(1)} | ${((15.0*ptWt*60)/3200).toFixed(1)} | ${((17.5*ptWt*60)/3200).toFixed(1)} | ${((20.0*ptWt*60)/3200).toFixed(1)}
 
 [4] DOBUTAMINE (1000 mg in 500 mL = 2000 mcg/mL) · Weight-adjusted (${ptWt} kg)
-Dose (mcg/kg/min): 1.0 | 2.5 | 5.0 | 7.5  | 10.0 | 12.5 | 15.0 | 17.5 | 20.0
-Rate (mL/hr)     : ${((1.0*ptWt*60)/2000).toFixed(1)} | ${((2.5*ptWt*60)/2000).toFixed(1)} | ${((5.0*ptWt*60)/2000).toFixed(1)} | ${((7.5*ptWt*60)/2000).toFixed(1)} | ${((10.0*ptWt*60)/2000).toFixed(1)} | ${((12.5*ptWt*60)/2000).toFixed(1)} | ${((15.0*ptWt*60)/2000).toFixed(1)} | ${((17.5*ptWt*60)/2000).toFixed(1)} | ${((20.0*ptWt*60)/2000).toFixed(1)}
+Dose (mcg/kg/min): 2.5 | 5.0 | 7.5  | 10.0 | 12.5 | 15.0 | 17.5 | 20.0
+Rate (mL/hr)     : ${((2.5*ptWt*60)/2000).toFixed(1)} | ${((5.0*ptWt*60)/2000).toFixed(1)} | ${((7.5*ptWt*60)/2000).toFixed(1)} | ${((10.0*ptWt*60)/2000).toFixed(1)} | ${((12.5*ptWt*60)/2000).toFixed(1)} | ${((15.0*ptWt*60)/2000).toFixed(1)} | ${((17.5*ptWt*60)/2000).toFixed(1)} | ${((20.0*ptWt*60)/2000).toFixed(1)}
 
 [5] NITROGLYCERIN (50 mg in 500 mL = 100 mcg/mL) · Non-weight based (mcg/min)
-Dose (mcg/min): 5   | 10  | 15  | 20  | 25  | 30  | 35  | 40  | 45  | 50
-Rate (mL/hr)  : 3.0 | 6.0 | 9.0 | 12.0| 15.0| 18.0| 21.0| 24.0| 27.0| 30.0
+Dose (mcg/min): 5   | 10  | 15  | 20  | 25  | 30  | 40  | 50
+Rate (mL/hr)  : 3.0 | 6.0 | 9.0 | 12.0| 15.0| 18.0| 24.0| 30.0
 
 [6] LABETALOL (200 mg in 200 mL = 1 mg/mL) · Non-weight based (mg/min)
 Dose (mg/min): 0.5 | 1.0 | 1.5 | 2.0 | 2.5 | 3.0
 Rate (mL/hr) : 30  | 60  | 90  | 120 | 150 | 180
 
 [7] REMIFENTANIL (15 mg in 60 mL = 250 mcg/mL) · Weight-adjusted (${ptWt} kg)
-Dose (mcg/kg/min): 0.05 | 0.1 | 0.2 | 0.3 | 0.4 | 0.5 | 0.8 | 1.0 | 1.5 | 2.0
-Rate (mL/hr)     : ${((0.05*ptWt*60)/250).toFixed(1)} | ${((0.1*ptWt*60)/250).toFixed(1)} | ${((0.2*ptWt*60)/250).toFixed(1)} | ${((0.3*ptWt*60)/250).toFixed(1)} | ${((0.4*ptWt*60)/250).toFixed(1)} | ${((0.5*ptWt*60)/250).toFixed(1)} | ${((0.8*ptWt*60)/250).toFixed(1)} | ${((1.0*ptWt*60)/250).toFixed(1)} | ${((1.5*ptWt*60)/250).toFixed(1)} | ${((2.0*ptWt*60)/250).toFixed(1)}
+Dose (mcg/kg/min): 0.05 | 0.1 | 0.2 | 0.3 | 0.5 | 0.8 | 1.0 | 1.5
+Rate (mL/hr)     : ${((0.05*ptWt*60)/250).toFixed(1)} | ${((0.1*ptWt*60)/250).toFixed(1)} | ${((0.2*ptWt*60)/250).toFixed(1)} | ${((0.3*ptWt*60)/250).toFixed(1)} | ${((0.5*ptWt*60)/250).toFixed(1)} | ${((0.8*ptWt*60)/250).toFixed(1)} | ${((1.0*ptWt*60)/250).toFixed(1)} | ${((1.5*ptWt*60)/250).toFixed(1)}
 
 [8] NIMBEX (100 mg in 100 mL = 1 mg/mL) · Weight-adjusted (${ptWt} kg)
 Dose (mg/kg/hr): 0.10 | 0.15 | 0.20 | 0.25 | 0.30 | 0.35 | 0.40
 Rate (mL/hr)   : ${((0.10*ptWt)/1).toFixed(1)} | ${((0.15*ptWt)/1).toFixed(1)} | ${((0.20*ptWt)/1).toFixed(1)} | ${((0.25*ptWt)/1).toFixed(1)} | ${((0.30*ptWt)/1).toFixed(1)} | ${((0.35*ptWt)/1).toFixed(1)} | ${((0.40*ptWt)/1).toFixed(1)}
 
 [9] HEPARIN SODIUM (25000 Units in 50 mL = 500 U/mL) · Daily kUnits
-Daily Dose (kU): 10  | 14  | 18  | 20  | 22  | 24  | 28  | 32  | 36  | 40  | 48  | 52
-Continuous Rate: 0.8 | 1.2 | 1.5 | 1.7 | 1.8 | 2.0 | 2.3 | 2.7 | 3.0 | 3.3 | 4.0 | 4.3 mL/hr
+Daily Dose (kU): 12  | 16  | 20  | 24  | 28  | 32  | 40  | 48
+Continuous Rate: 1.0 | 1.3 | 1.7 | 2.0 | 2.3 | 2.7 | 3.3 | 4.0 mL/hr
 
 [10] PROTOCOL INFUSIONS
 - Regular Insulin (50 IU in 50 mL NS): 1 IU = 1 mL/hr (titrate per sliding scale protocol)
@@ -557,13 +568,10 @@ Mandatory Dual-RN verification on smart pump configuration, drug bag label, and 
     handleInsert(text);
   };
 
-  // Reusable Helper to render horizontal dose + pump rate strip
+  // Reusable Helper to render spacious, clear horizontal dose + pump rate strip
   const renderHorizontalTitrationCard = (config: {
     title: string;
-    category: string;
-    categoryColor?: string;
     formulation: string;
-    notes?: string;
     rows: Array<{
       doseLabel: string;
       rateLabel: string;
@@ -571,46 +579,40 @@ Mandatory Dual-RN verification on smart pump configuration, drug bag label, and 
     }>;
   }) => {
     return (
-      <div className="border border-slate-300 rounded overflow-hidden bg-white text-[8px] leading-tight print-avoid-break shadow-2xs">
-        {/* Header bar */}
-        <div className="bg-slate-100 px-1.5 py-0.5 border-b border-slate-300 flex items-center justify-between">
-          <div className="flex items-center gap-1.5">
-            <span className={`text-[6.5px] font-black uppercase px-1 py-0.2 rounded ${config.categoryColor || 'bg-slate-200 text-slate-800'}`}>
-              {config.category}
-            </span>
-            <span className="font-black text-slate-950 text-[8.5px] uppercase tracking-wide">
-              {config.title}
-            </span>
-          </div>
-          <div className="flex items-center gap-1.5 font-mono text-[7.5px]">
-            <span className="font-bold text-slate-800">{config.formulation}</span>
-            {config.notes && <span className="text-slate-500 font-sans hidden sm:inline print:inline">· {config.notes}</span>}
-          </div>
+      <div className="border border-slate-400 rounded-md overflow-hidden bg-white print-avoid-break shadow-2xs">
+        {/* Header bar: Big clear Drug Name & Formulation */}
+        <div className="bg-slate-100 px-2 py-0.5 border-b border-slate-300 flex items-center justify-between">
+          <span className="font-black text-slate-950 text-[11.5px] uppercase tracking-wide">
+            {config.title}
+          </span>
+          <span className="font-bold text-slate-800 font-mono text-[10.5px]">
+            {config.formulation}
+          </span>
         </div>
 
         {/* Titration Rows */}
         {config.rows.map((row, rIdx) => (
-          <div key={rIdx} className={rIdx > 0 ? 'border-t border-slate-200' : ''}>
-            <table className="w-full border-collapse text-center">
+          <div key={rIdx} className={rIdx > 0 ? 'border-t border-slate-300' : ''}>
+            <table className="w-full border-collapse text-center table-fixed">
               <tbody>
                 {/* Dose Row */}
-                <tr className="border-b border-slate-200">
-                  <td className="bg-slate-50 text-slate-700 font-bold text-[7px] uppercase px-1 py-0.5 border-r border-slate-300 whitespace-nowrap text-left w-12">
+                <tr className="border-b border-slate-200 bg-slate-50/80">
+                  <td className="bg-slate-100 text-slate-700 font-bold text-[9px] uppercase px-1 py-1 border-r border-slate-300 whitespace-nowrap text-left w-14">
                     {row.doseLabel}
                   </td>
                   {row.items.map((item, iIdx) => (
-                    <td key={iIdx} className="font-mono font-semibold text-slate-800 border-r border-slate-200 px-0.5 py-0.5 text-[7px] last:border-r-0">
+                    <td key={iIdx} className="font-mono font-bold text-slate-800 border-r border-slate-200 px-0.5 py-1 text-[10.5px] last:border-r-0">
                       {item.dose}
                     </td>
                   ))}
                 </tr>
-                {/* Rate Row */}
-                <tr className="bg-blue-50/50">
-                  <td className="bg-blue-100/90 text-blue-950 font-black text-[7px] uppercase px-1 py-0.5 border-r border-slate-300 whitespace-nowrap text-left w-12">
+                {/* Rate Row - BIG, CLEAR & PROMINENT */}
+                <tr className="bg-blue-50/70">
+                  <td className="bg-blue-100 text-blue-950 font-black text-[9.5px] uppercase px-1 py-1.5 border-r border-slate-300 whitespace-nowrap text-left w-14">
                     {row.rateLabel}
                   </td>
                   {row.items.map((item, iIdx) => (
-                    <td key={iIdx} className="font-mono font-black text-blue-950 bg-blue-50/70 border-r border-slate-200 px-0.5 py-0.5 text-[7.5px] last:border-r-0">
+                    <td key={iIdx} className="font-mono font-black text-blue-950 bg-blue-50/90 border-r border-slate-200 px-0.5 py-1.5 text-[12px] last:border-r-0">
                       {item.rate}
                     </td>
                   ))}
@@ -663,72 +665,64 @@ Mandatory Dual-RN verification on smart pump configuration, drug bag label, and 
     const hepVol = parseFloat(masterHepVol) || 50;
     const hepConc = hepAmt / hepVol; // 500 U/mL
 
-    // Dynamic Dose Steps Arrays
-    const norDoses1 = [0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
-    const norDoses2 = [16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30];
-    const epiDoses = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0];
-    const dopaDoses = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
-    const dobuDoses = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
-    const ntgDoses = [2.5, 5, 7.5, 10, 12.5, 15, 17.5, 20, 22.5, 25, 30, 35, 40, 45, 50];
+    // Spacious, Uncongested Titration Steps (8-9 columns per row for large clear font)
+    const norDoses1 = [0.5, 1, 2, 4, 6, 8, 10, 12, 15];
+    const norDoses2 = [16, 18, 20, 22, 24, 26, 28, 30];
+    const epiDoses = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1.0];
+    const dopaDoses = [2.5, 5, 7.5, 10, 12.5, 15, 17.5, 20];
+    const dobuDoses = [2.5, 5, 7.5, 10, 12.5, 15, 17.5, 20];
+    const ntgDoses = [5, 10, 15, 20, 25, 30, 40, 50];
     const labDoses = [0.5, 1, 1.5, 2, 2.5, 3];
-    const remiDoses = [0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1.0, 1.2, 1.5, 2.0];
+    const remiDoses = [0.05, 0.1, 0.2, 0.3, 0.5, 0.8, 1.0, 1.5];
     const nimbexDoses = [0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40];
-    const hepDoses = [10, 14, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 40, 44, 48, 52];
+    const hepDoses = [12, 16, 20, 24, 28, 32, 40, 48];
 
-    const todayStr = new Date().toLocaleDateString('en-GB'); // dd/mm/yyyy matching 25/10/2026
+    const todayStr = new Date().toLocaleDateString('en-GB');
     const timeStr = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
 
     return (
-      <div className="font-sans text-xs space-y-1.5 max-w-full text-slate-950">
-        {/* Document Header (Matches Screenshot Instant Infusion Calculator) */}
-        <div className="border-b-2 border-slate-900 pb-1 flex items-start justify-between">
+      <div className="font-sans text-xs space-y-2 max-w-full text-slate-950">
+        {/* Document Header - Clean & Focused */}
+        <div className="border-b-2 border-slate-900 pb-1 flex items-end justify-between">
           <div>
-            <div className="text-[7.5px] uppercase font-bold tracking-widest text-slate-600">
-              Intensive Care & Emergency Nursing Service · Critical Titration Protocol
-            </div>
-            <h1 className="text-base font-black tracking-tight text-slate-950 uppercase flex items-center gap-2">
+            <h1 className="text-lg font-black tracking-tight text-slate-950 uppercase flex items-center gap-2">
               <span>Instant Infusion Calculator</span>
-              <span className="text-[8px] font-bold px-1.5 py-0.2 bg-slate-900 text-white rounded">
-                {sheetPrintMode === 'icu_master' ? 'ICU Bedside Master (A4)' : `Selected MAR (${selectedDrugs.length} Infusions)`}
+              <span className="text-[10px] font-bold px-2 py-0.5 bg-slate-900 text-white rounded">
+                {sheetPrintMode === 'icu_master' ? 'ICU Bedside Master (A4 Landscape)' : `Selected MAR (${selectedDrugs.length} Infusions · Landscape)`}
               </span>
             </h1>
-            <div className="text-[8px] text-slate-600 font-medium">
-              Weight-Adjusted Smart Pump Titration Reference & Single-Sheet Administration Record
-            </div>
           </div>
-          <div className="text-right text-[8.5px] text-slate-700 leading-tight">
-            <div><strong>Date:</strong> {todayStr}</div>
-            <div><strong>Time:</strong> {timeStr}</div>
-            <div className="font-mono text-[7.5px] text-slate-500">REF: ICU-A4-{sheetPrintMode.toUpperCase()}</div>
+          <div className="text-right text-[11px] text-slate-700 font-medium leading-tight">
+            <span>Date: <strong>{todayStr}</strong> · Time: <strong>{timeStr}</strong></span>
           </div>
         </div>
 
-        {/* Patient Demographics Bar (Matching Name, Weight [50] Kg, CPR, Date/Time from Screenshot) */}
-        <div className="grid grid-cols-4 gap-2 p-1.5 bg-slate-100 border border-slate-300 rounded text-[9px] leading-tight items-center">
+        {/* Patient Demographics Bar - Prominent & Legible */}
+        <div className="grid grid-cols-4 gap-3 p-1.5 bg-slate-100 border border-slate-300 rounded text-[11px] leading-tight items-center">
           <div>
-            <span className="text-slate-500 font-bold uppercase text-[7px] block">Name:</span>
-            <span className="font-bold text-slate-950 text-[10px]">
+            <span className="text-slate-500 font-bold uppercase text-[8.5px] block">Patient Name</span>
+            <span className="font-bold text-slate-950 text-[12px] truncate block">
               {patientName ? patientName : '____________________'}
             </span>
           </div>
           <div>
-            <span className="text-slate-500 font-bold uppercase text-[7px] block">Weight:</span>
-            <span className="font-black text-blue-950 font-mono text-[11px] bg-white px-1.5 py-0.5 rounded border border-slate-300 inline-block shadow-2xs">
-              {ptWeight} Kg
+            <span className="text-slate-500 font-bold uppercase text-[8.5px] block">Patient Weight</span>
+            <span className="font-black text-blue-950 font-mono text-[13px] bg-white px-2 py-0.5 rounded border border-slate-300 inline-block shadow-2xs">
+              {ptWeight} kg
             </span>
-            <span className="text-[7.5px] text-slate-500 ml-1">
+            <span className="text-[9.5px] text-slate-600 font-medium ml-1">
               ({Math.round(ptWeight * 2.20462)} lbs)
             </span>
           </div>
           <div>
-            <span className="text-slate-500 font-bold uppercase text-[7px] block">CPR / MRN:</span>
-            <span className="font-bold font-mono text-slate-950 text-[10px]">
+            <span className="text-slate-500 font-bold uppercase text-[8.5px] block">CPR / MRN</span>
+            <span className="font-bold font-mono text-slate-950 text-[12px] truncate block">
               {patientCpr ? patientCpr : '____________________'}
             </span>
           </div>
           <div>
-            <span className="text-slate-500 font-bold uppercase text-[7px] block">Location / Bed:</span>
-            <span className="font-bold text-slate-950 text-[10px]">
+            <span className="text-slate-500 font-bold uppercase text-[8.5px] block">Bed / Location</span>
+            <span className="font-bold text-slate-950 text-[12px] truncate block">
               {patientBed || activeBedLabel || 'ICU Bed 301'}
             </span>
           </div>
@@ -738,23 +732,20 @@ Mandatory Dual-RN verification on smart pump configuration, drug bag label, and 
             MODE 1: ICU MASTER INFUSION SHEET (2 COLUMNS AS PER ATTACHED SCREENSHOT)
            ========================================================================= */}
         {sheetPrintMode === 'icu_master' ? (
-          <div className="grid grid-cols-2 gap-1.5">
+          <div className="grid grid-cols-2 gap-2">
             {/* LEFT COLUMN: INOTROPES & VASOPRESSORS */}
             <div className="space-y-1.5">
-              <div className="px-1 py-0.5 bg-rose-50 border-l-3 border-rose-600 rounded-r text-[7.5px] font-black uppercase text-rose-950 tracking-wider">
+              <div className="px-2 py-0.5 bg-rose-100/70 border-l-3 border-rose-600 rounded-r text-[9px] font-black uppercase text-rose-950 tracking-wider">
                 Inotropes & Vasopressors
               </div>
 
               {/* 1. Nor Epinephrine */}
               {renderHorizontalTitrationCard({
                 title: 'Nor Epinephrine',
-                category: 'Inotropes',
-                categoryColor: 'bg-rose-100 text-rose-900',
                 formulation: `${norAmt} mg in ${norVol} mL (${Math.round(norConc)} µg/mL)`,
-                notes: 'Target MAP ≥ 65 mmHg',
                 rows: [
                   {
-                    doseLabel: 'Dose µg/m',
+                    doseLabel: 'µg/min',
                     rateLabel: 'mL/hr',
                     items: norDoses1.map((d) => ({
                       dose: d,
@@ -762,7 +753,7 @@ Mandatory Dual-RN verification on smart pump configuration, drug bag label, and 
                     })),
                   },
                   {
-                    doseLabel: 'Dose µg/m',
+                    doseLabel: 'µg/min',
                     rateLabel: 'mL/hr',
                     items: norDoses2.map((d) => ({
                       dose: d,
@@ -775,10 +766,7 @@ Mandatory Dual-RN verification on smart pump configuration, drug bag label, and 
               {/* 2. Epinephrine */}
               {renderHorizontalTitrationCard({
                 title: 'Epinephrine',
-                category: 'Inotropes',
-                categoryColor: 'bg-rose-100 text-rose-900',
                 formulation: `${epiAmt} mg in ${epiVol} mL (${Math.round(epiConc)} µg/mL)`,
-                notes: `Weight-adjusted (${ptWeight} kg)`,
                 rows: [
                   {
                     doseLabel: 'µg/kg/m',
@@ -794,10 +782,7 @@ Mandatory Dual-RN verification on smart pump configuration, drug bag label, and 
               {/* 3. Dopamine */}
               {renderHorizontalTitrationCard({
                 title: 'Dopamine',
-                category: 'Inotropes',
-                categoryColor: 'bg-rose-100 text-rose-900',
                 formulation: `${dopaAmt} mg in ${dopaVol} mL (${Math.round(dopaConc)} µg/mL)`,
-                notes: `Vesicant · Central Line · (${ptWeight} kg)`,
                 rows: [
                   {
                     doseLabel: 'µg/kg/m',
@@ -813,10 +798,7 @@ Mandatory Dual-RN verification on smart pump configuration, drug bag label, and 
               {/* 4. Dobutamine */}
               {renderHorizontalTitrationCard({
                 title: 'Dobutamine',
-                category: 'Inotropes',
-                categoryColor: 'bg-rose-100 text-rose-900',
                 formulation: `${dobuAmt} mg in ${dobuVol} mL (${Math.round(dobuConc)} µg/mL)`,
-                notes: `Cardiogenic Shock · (${ptWeight} kg)`,
                 rows: [
                   {
                     doseLabel: 'µg/kg/m',
@@ -832,13 +814,10 @@ Mandatory Dual-RN verification on smart pump configuration, drug bag label, and 
               {/* 5. Nitroglycerin (NTG) */}
               {renderHorizontalTitrationCard({
                 title: 'NTG (Nitroglycerin)',
-                category: 'Vasodilator',
-                categoryColor: 'bg-amber-100 text-amber-900',
                 formulation: `${ntgAmt} mg in ${ntgVol} mL (${Math.round(ntgConc)} µg/mL)`,
-                notes: 'ACS / Heart Failure',
                 rows: [
                   {
-                    doseLabel: 'Dose µg/m',
+                    doseLabel: 'µg/min',
                     rateLabel: 'mL/hr',
                     items: ntgDoses.map((d) => ({
                       dose: d,
@@ -851,17 +830,14 @@ Mandatory Dual-RN verification on smart pump configuration, drug bag label, and 
 
             {/* RIGHT COLUMN: MORE, SEDATIVES, ANTICOAGULATION & FIXED INFUSIONS */}
             <div className="space-y-1.5">
-              <div className="px-1 py-0.5 bg-blue-50 border-l-3 border-blue-600 rounded-r text-[7.5px] font-black uppercase text-blue-950 tracking-wider">
-                Antihypertensive, Sedation & ICU Regimens
+              <div className="px-2 py-0.5 bg-blue-100/70 border-l-3 border-blue-600 rounded-r text-[9px] font-black uppercase text-blue-950 tracking-wider">
+                Sedation, Antihypertensive & Protocols
               </div>
 
               {/* 1. Labetalol */}
               {renderHorizontalTitrationCard({
                 title: 'Labetalol',
-                category: 'More',
-                categoryColor: 'bg-indigo-100 text-indigo-900',
                 formulation: `${labAmt} mg in ${labVol} mL (${Math.round(labConc)} mg/mL)`,
-                notes: 'Hypertensive Emergency / Aortic Dissection',
                 rows: [
                   {
                     doseLabel: 'mg/min',
@@ -877,10 +853,7 @@ Mandatory Dual-RN verification on smart pump configuration, drug bag label, and 
               {/* 2. Remifentanil */}
               {renderHorizontalTitrationCard({
                 title: 'Remifentanil',
-                category: 'Sedatives',
-                categoryColor: 'bg-purple-100 text-purple-900',
                 formulation: `${remiAmt} mg in ${remiVol} mL (${Math.round(remiConc)} µg/mL)`,
-                notes: `Short-acting Opioid · (${ptWeight} kg)`,
                 rows: [
                   {
                     doseLabel: 'µg/kg/m',
@@ -896,10 +869,7 @@ Mandatory Dual-RN verification on smart pump configuration, drug bag label, and 
               {/* 3. Nimbex (Cisatracurium) */}
               {renderHorizontalTitrationCard({
                 title: 'Nimbex (Cisatracurium)',
-                category: 'Sedatives',
-                categoryColor: 'bg-purple-100 text-purple-900',
                 formulation: `${nimbexAmt} mg in ${nimbexVol} mL (${Math.round(nimbexConc)} mg/mL)`,
-                notes: `Paralytic · Train-of-Four · (${ptWeight} kg)`,
                 rows: [
                   {
                     doseLabel: 'mg/kg/hr',
@@ -915,10 +885,7 @@ Mandatory Dual-RN verification on smart pump configuration, drug bag label, and 
               {/* 4. Heparin */}
               {renderHorizontalTitrationCard({
                 title: 'Heparin Sodium',
-                category: 'Misc',
-                categoryColor: 'bg-emerald-100 text-emerald-900',
                 formulation: `${hepAmt} Units in ${hepVol} mL (${Math.round(hepConc)} U/mL)`,
-                notes: 'Titrate per Anti-Xa / aPTT',
                 rows: [
                   {
                     doseLabel: 'kU/24hr',
@@ -931,63 +898,58 @@ Mandatory Dual-RN verification on smart pump configuration, drug bag label, and 
                 ],
               })}
 
-              {/* 5. Fixed ICU Protocol Infusions Card (Insulin, Amiodarone, Omeprazole, Lasix) */}
-              <div className="border border-slate-300 rounded overflow-hidden bg-white text-[8px] leading-tight print-avoid-break shadow-2xs">
-                <div className="bg-slate-100 px-1.5 py-0.5 border-b border-slate-300 flex items-center justify-between">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[6.5px] font-black uppercase px-1 py-0.2 rounded bg-amber-100 text-amber-900">
-                      Fixed Infusions
-                    </span>
-                    <span className="font-black text-slate-950 text-[8.5px] uppercase tracking-wide">
-                      ICU Standard Protocol Continuous Infusions
-                    </span>
-                  </div>
-                  <span className="font-mono text-[7px] text-slate-500">Bedside Reference</span>
+              {/* 5. Fixed ICU Protocol Infusions Card */}
+              <div className="border border-slate-400 rounded-md overflow-hidden bg-white print-avoid-break shadow-2xs">
+                <div className="bg-slate-100 px-2 py-0.5 border-b border-slate-300 flex items-center justify-between">
+                  <span className="font-black text-slate-950 text-[11.5px] uppercase tracking-wide">
+                    Fixed Protocol Infusions
+                  </span>
+                  <span className="font-mono text-[9px] text-slate-600 font-bold">Standard Regimens</span>
                 </div>
-                <table className="w-full border-collapse text-left text-[7.5px]">
+                <table className="w-full border-collapse text-left text-[9.5px]">
                   <tbody>
                     <tr className="border-b border-slate-200">
-                      <td className="bg-slate-50 font-bold px-1.5 py-0.5 text-slate-800 border-r border-slate-300 w-32">
-                        Insulin Infusion (50 IU / 50 mL NS)
+                      <td className="bg-slate-50 font-bold px-2 py-1 text-slate-900 border-r border-slate-300 w-36">
+                        Insulin (50 IU / 50 mL NS)
                       </td>
-                      <td className="px-1.5 py-0.5 font-mono font-bold text-blue-900 border-r border-slate-200 w-20">
+                      <td className="px-2 py-1 font-mono font-black text-blue-950 border-r border-slate-200 w-24 text-[11px]">
                         1 IU = 1 mL/hr
                       </td>
-                      <td className="px-1.5 py-0.5 text-slate-600">
-                        Titrate hourly per sliding scale protocol. Target BG 140–180 mg/dL.
+                      <td className="px-2 py-1 text-slate-700">
+                        Titrate hourly per protocol (Target BG 140–180 mg/dL).
                       </td>
                     </tr>
                     <tr className="border-b border-slate-200">
-                      <td className="bg-slate-50 font-bold px-1.5 py-0.5 text-slate-800 border-r border-slate-300">
-                        Amiodarone (1000 mg / 500 mL D5W)
+                      <td className="bg-slate-50 font-bold px-2 py-1 text-slate-900 border-r border-slate-300">
+                        Amiodarone (1 g / 500 mL)
                       </td>
-                      <td className="px-1.5 py-0.5 font-mono font-bold text-blue-900 border-r border-slate-200">
+                      <td className="px-2 py-1 font-mono font-black text-blue-950 border-r border-slate-200 text-[11px]">
                         22 → 11 mL/hr
                       </td>
-                      <td className="px-1.5 py-0.5 text-slate-600">
-                        Load 22 mL/hr (1 mg/min) x 6h → Maint 11 mL/hr (0.5 mg/min) x 18h.
+                      <td className="px-2 py-1 text-slate-700">
+                        Load 22 mL/hr (1 mg/min) x 6h → Maint 11 mL/hr x 18h.
                       </td>
                     </tr>
                     <tr className="border-b border-slate-200">
-                      <td className="bg-slate-50 font-bold px-1.5 py-0.5 text-slate-800 border-r border-slate-300">
-                        Omeprazole (80 mg / 500 mL NS)
+                      <td className="bg-slate-50 font-bold px-2 py-1 text-slate-900 border-r border-slate-300">
+                        Omeprazole (80 mg / 500 mL)
                       </td>
-                      <td className="px-1.5 py-0.5 font-mono font-bold text-blue-900 border-r border-slate-200">
+                      <td className="px-2 py-1 font-mono font-black text-blue-950 border-r border-slate-200 text-[11px]">
                         50 mL/hr
                       </td>
-                      <td className="px-1.5 py-0.5 text-slate-600">
-                        Continuous 8 mg/hr IV infusion for upper GI bleeding / post-endoscopy.
+                      <td className="px-2 py-1 text-slate-700">
+                        Continuous 8 mg/hr IV infusion.
                       </td>
                     </tr>
                     <tr>
-                      <td className="bg-slate-50 font-bold px-1.5 py-0.5 text-slate-800 border-r border-slate-300">
-                        Lasix / Furosemide (250 mg / 50 mL NS)
+                      <td className="bg-slate-50 font-bold px-2 py-1 text-slate-900 border-r border-slate-300">
+                        Lasix (250 mg / 50 mL)
                       </td>
-                      <td className="px-1.5 py-0.5 font-mono font-bold text-blue-900 border-r border-slate-200">
+                      <td className="px-2 py-1 font-mono font-black text-blue-950 border-r border-slate-200 text-[11px]">
                         2 – 8 mL/hr
                       </td>
-                      <td className="px-1.5 py-0.5 text-slate-600">
-                        Continuous 10 – 40 mg/hr infusion. Titrate for target urine output.
+                      <td className="px-2 py-1 text-slate-700">
+                        Continuous 10 – 40 mg/hr. Titrate for urine output.
                       </td>
                     </tr>
                   </tbody>
@@ -999,7 +961,7 @@ Mandatory Dual-RN verification on smart pump configuration, drug bag label, and 
           /* =========================================================================
               MODE 2: SELECTED PATIENT INFUSIONS MAR (USING HORIZONTAL STRIP CARDS)
              ========================================================================= */
-          <div className={`grid gap-1.5 ${selectedDrugs.length >= 2 ? 'grid-cols-2' : 'grid-cols-1'}`}>
+          <div className={`grid gap-2 ${selectedDrugs.length >= 2 ? 'grid-cols-2' : 'grid-cols-1'}`}>
             {selectedDrugs.map((drug, dIdx) => {
               const ladder = generateTitrationLadder({
                 drugAmount: drug.drugAmount,
@@ -1012,7 +974,7 @@ Mandatory Dual-RN verification on smart pump configuration, drug bag label, and 
                 patientWeightKg: ptWeight,
               });
 
-              // Format steps into horizontal strips
+              // Format steps into clean 8-column horizontal strips
               const steps = ladder.steps;
               const rows: Array<{
                 doseLabel: string;
@@ -1020,7 +982,7 @@ Mandatory Dual-RN verification on smart pump configuration, drug bag label, and 
                 items: Array<{ dose: number | string; rate: number | string }>;
               }> = [];
 
-              if (steps.length <= 14) {
+              if (steps.length <= 8) {
                 rows.push({
                   doseLabel: `${drug.doseUnit.split('/')[0]}`,
                   rateLabel: 'mL/hr',
@@ -1044,10 +1006,7 @@ Mandatory Dual-RN verification on smart pump configuration, drug bag label, and 
                 <div key={drug.id || dIdx}>
                   {renderHorizontalTitrationCard({
                     title: `${dIdx + 1}. ${drug.drugName}`,
-                    category: drug.isHighAlert ? 'High-Alert' : 'Active Infusion',
-                    categoryColor: drug.isHighAlert ? 'bg-rose-100 text-rose-900' : 'bg-blue-100 text-blue-900',
-                    formulation: `${drug.drugAmount} ${drug.drugUnit} / ${drug.bagVolumeMl} mL ${drug.diluent} (${ladder.concentrationDisplay})`,
-                    notes: drug.titrationGoal || `Range: ${drug.minDose}–${drug.maxDose} ${drug.doseUnit}`,
+                    formulation: `${drug.drugAmount} ${drug.drugUnit} / ${drug.bagVolumeMl} mL (${ladder.concentrationDisplay})`,
                     rows,
                   })}
                 </div>
@@ -1056,42 +1015,32 @@ Mandatory Dual-RN verification on smart pump configuration, drug bag label, and 
           </div>
         )}
 
-        {/* Pre-Administration Safeguards Checklist */}
-        <div className="border border-slate-300 rounded p-1 bg-slate-50 text-[8px] leading-snug">
-          <div className="font-bold text-slate-900 mb-0.5 uppercase tracking-wide text-[7px] flex items-center justify-between">
-            <span>Pre-Administration Verification Checklist (Per Hospital ICU Policy)</span>
-            <span className="font-mono text-slate-500 font-normal">Dual-Nurse Bedside Check Required</span>
-          </div>
-          <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 text-slate-700 text-[7.5px]">
-            <div>[  ] 1. Verified 2 Patient Identifiers against active eMAR order</div>
-            <div>[  ] 2. All dedicated infusion lines labeled & line-traced to patient catheter</div>
-            <div>[  ] 3. Smart pump drug library selected; soft/hard guardrails active</div>
-            <div>[  ] 4. Venous access patency & blood return confirmed; no infiltration</div>
-          </div>
+        {/* Safety & Pre-Administration Verification Bar */}
+        <div className="border border-slate-300 rounded bg-slate-50 px-3 py-1 text-[9.5px] font-bold text-slate-700 flex items-center justify-between">
+          <span>✓ 2 Patient Identifiers Checked</span>
+          <span>✓ Infusion Line Traced to Catheter</span>
+          <span>✓ Smart Pump Drug Library & Limits Active</span>
+          <span>✓ Dual-RN Independent Verification</span>
         </div>
 
-        {/* Dual RN Signatures Block */}
-        <div className="grid grid-cols-2 gap-4 border-t-2 border-slate-900 pt-1 text-[8.5px] leading-tight">
+        {/* Dual RN Signatures Block - Clear & Spacious */}
+        <div className="grid grid-cols-2 gap-6 border-t-2 border-slate-900 pt-1.5 text-[10px] leading-tight">
           <div>
-            <div className="font-bold text-slate-900">Primary Administering Nurse:</div>
-            <div className="border-b border-slate-500 mt-2 mb-0.5"></div>
-            <div className="flex justify-between text-slate-600 text-[7px]">
+            <div className="font-bold text-slate-900 text-[10.5px]">Primary Administering Nurse:</div>
+            <div className="border-b border-slate-400 mt-3 mb-1"></div>
+            <div className="flex justify-between text-slate-600 text-[9px]">
               <span>Signature / RN License #</span>
               <span>Date: ____________  Time: ________</span>
             </div>
           </div>
           <div>
-            <div className="font-bold text-slate-900">Independent Dual-RN Verification Co-Signer:</div>
-            <div className="border-b border-slate-500 mt-2 mb-0.5"></div>
-            <div className="flex justify-between text-slate-600 text-[7px]">
+            <div className="font-bold text-slate-900 text-[10.5px]">Dual-RN Independent Verification Co-Signer:</div>
+            <div className="border-b border-slate-400 mt-3 mb-1"></div>
+            <div className="flex justify-between text-slate-600 text-[9px]">
               <span>Signature / RN License #</span>
               <span>Date: ____________  Time: ________</span>
             </div>
           </div>
-        </div>
-
-        <div className="text-center text-[7px] text-slate-400 pt-0.5 font-mono">
-          Instant Infusion Calculator (A4 Master) · Valid for bedside clinical titration reference · Must fit on 1 Single A4 Sheet
         </div>
       </div>
     );
@@ -1584,7 +1533,7 @@ Mandatory Dual-RN verification on smart pump configuration, drug bag label, and 
                       }`}
                     >
                       <Sparkles className="w-3.5 h-3.5" />
-                      <span>⚡ ICU Master Infusion Sheet (10 Drugs · Single A4)</span>
+                      <span>⚡ ICU Master Infusion Sheet (10 Drugs · A4 Landscape)</span>
                     </button>
                     <button
                       type="button"
@@ -1596,7 +1545,7 @@ Mandatory Dual-RN verification on smart pump configuration, drug bag label, and 
                       }`}
                     >
                       <Layers className="w-3.5 h-3.5" />
-                      <span>📋 Selected Patient Infusions MAR ({selectedDrugs.length} Active)</span>
+                      <span>📋 Selected Patient Infusions MAR ({selectedDrugs.length} Active · Landscape)</span>
                     </button>
                   </div>
 
@@ -1743,10 +1692,10 @@ Mandatory Dual-RN verification on smart pump configuration, drug bag label, and 
                         type="button"
                         onClick={handlePrintAdminSheet}
                         className={`py-2 px-4 rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-xs transition-colors ${theme.primaryBtn}`}
-                        title="Print all calculations on one single A4 sheet"
+                        title="Print all calculations on one single A4 landscape sheet"
                       >
                         <Printer className="w-4 h-4 text-white" />
-                        <span>Print A4 Sheet ({sheetPrintMode === 'icu_master' ? '10-Drug ICU Master' : `${selectedDrugs.length} Selected Infusions`})</span>
+                        <span>Print A4 Landscape Sheet ({sheetPrintMode === 'icu_master' ? '10-Drug ICU Master' : `${selectedDrugs.length} Selected Infusions`})</span>
                       </button>
 
                       <button
@@ -1757,10 +1706,10 @@ Mandatory Dual-RN verification on smart pump configuration, drug bag label, and 
                             ? 'bg-blue-100 dark:bg-blue-900/60 border-blue-300 dark:border-blue-700 text-blue-900 dark:text-blue-200'
                             : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-750'
                         }`}
-                        title="Toggle full printed A4 paper MAR layout preview"
+                        title="Toggle full printed A4 landscape paper MAR layout preview"
                       >
                         <FileText className="w-3.5 h-3.5 text-blue-500" />
-                        <span>{showPaperPreview ? 'Hide A4 Paper Preview' : 'Preview A4 Paper Sheet'}</span>
+                        <span>{showPaperPreview ? 'Hide A4 Landscape Preview' : 'Preview A4 Landscape Sheet'}</span>
                       </button>
 
                       <button
@@ -1916,11 +1865,33 @@ Mandatory Dual-RN verification on smart pump configuration, drug bag label, and 
 
                   {/* Print-Ready Multi-Drug Paper Document (Single Sheet A4 Format Preview) */}
                   {showPaperPreview && (
-                    <div
-                      id="printable-iv-admin-sheet"
-                      className="block p-5 bg-white text-slate-950 border-2 border-slate-300 rounded-xl shadow-lg font-sans text-xs space-y-2 max-w-full"
-                    >
-                      {renderA4AdminSheetContent()}
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between text-[11px] font-bold text-slate-600 dark:text-slate-400 px-1 flex-wrap gap-1.5">
+                        <span className="flex items-center gap-1.5">
+                          <FileText className="w-3.5 h-3.5 text-blue-600" />
+                          <span>A4 Landscape Sheet Preview (297 mm × 210 mm · Fits 1 Page)</span>
+                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] bg-blue-50 dark:bg-blue-950 text-blue-800 dark:text-blue-300 px-2 py-0.5 rounded font-semibold border border-blue-200 dark:border-blue-800">
+                            Orientation: Landscape (297 × 210 mm)
+                          </span>
+                          <button
+                            type="button"
+                            onClick={handlePrintAdminSheet}
+                            className={`py-1 px-3 rounded-md text-xs font-bold flex items-center gap-1.5 shadow-2xs transition-colors ${theme.primaryBtn}`}
+                            title="Print this sheet on landscape paper"
+                          >
+                            <Printer className="w-3.5 h-3.5 text-white" />
+                            <span>Print Landscape Sheet</span>
+                          </button>
+                        </div>
+                      </div>
+                      <div
+                        id="printable-iv-admin-sheet"
+                        className="block p-5 bg-white text-slate-950 border-2 border-slate-300 rounded-xl shadow-lg font-sans text-xs space-y-2 max-w-full overflow-x-auto"
+                      >
+                        {renderA4AdminSheetContent()}
+                      </div>
                     </div>
                   )}
                 </div>

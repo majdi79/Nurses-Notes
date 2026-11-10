@@ -43,7 +43,7 @@ export interface NoteTemplate {
 
 export const CATEGORIES = [
   { id: 'all', label: 'All Templates' },
-  { id: 'ccu', label: 'Ward 208 CCU' },
+  { id: 'ccu', label: 'Critical Care (CCU)' },
   { id: 'routine', label: 'Routine & Assessments' },
   { id: 'vascular', label: 'Vascular & Infusions' },
   { id: 'wound', label: 'Wound & Skin Care' },

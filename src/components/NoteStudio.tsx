@@ -44,10 +44,12 @@ import {
   CornerDownRight,
   Eraser,
   Undo2,
+  FileText,
 } from 'lucide-react';
 import { NoteTemplate, isTemplateProcedure, getTemplateProcedureCategory } from '../data/templates';
 import {
   NoteFormatType,
+  compileNoteText,
   getCurrentMilitaryTime,
   getStandardVitalsSnippet,
   getDualRNStamp,
@@ -1086,6 +1088,28 @@ export const NoteStudio: React.FC<NoteStudioProps> = ({
             </div>
           )}
 
+          {/* Empty Note Field Banner */}
+          {noteText.trim() === '' && (
+            <div className="bg-slate-50 dark:bg-slate-850 border-b border-slate-200 dark:border-slate-800 px-4 py-2.5 flex flex-wrap items-center justify-between gap-2.5 text-xs animate-fade-in">
+              <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
+                <span className="w-2 h-2 rounded-full bg-slate-400 dark:bg-slate-500 animate-pulse" />
+                <span>Note field is empty by default. Ready for documentation.</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  const compiled = compileNoteText(template, fieldValues, activeFormat);
+                  onTextChange(compiled);
+                }}
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-2xs transition-colors"
+                title="Insert currently selected template with empty bracketed fields into note"
+              >
+                <FileText className="w-3.5 h-3.5" />
+                <span>Insert Template: {template.title}</span>
+              </button>
+            </div>
+          )}
+
           {/* Maximized Editable Clinical Note Pad */}
           <div className="flex-1 relative flex flex-col min-h-0 bg-white dark:bg-slate-900 transition-colors">
             <textarea
@@ -1093,7 +1117,7 @@ export const NoteStudio: React.FC<NoteStudioProps> = ({
               value={noteText}
               onChange={(e) => onTextChange(e.target.value)}
               className={`w-full flex-1 h-full min-h-0 p-4 sm:p-5 font-mono ${fontClass} text-slate-900 dark:text-slate-100 bg-white dark:bg-slate-900 resize-none focus:outline-none leading-relaxed select-text tracking-wide transition-colors`}
-              placeholder="Your clinical note will appear here..."
+              placeholder="Note field is empty by default. Type your clinical note directly, select a template from the library on the left, or insert a clinical stamp..."
               spellCheck={false}
             />
           </div>

@@ -29,10 +29,10 @@ const STORAGE_KEY_SLOTS = 'nursechart_patient_slots';
 const STORAGE_KEY_ACTIVE_SLOT = 'nursechart_active_slot_id';
 
 const INITIAL_SLOTS: PatientSlot[] = [
-  { id: 'slot_1', bedLabel: 'Bed 301', templateId: 'routine-head-to-toe', fieldValues: {}, manualText: null, format: 'concise', lastUpdated: Date.now() },
-  { id: 'slot_2', bedLabel: 'Bed 302', templateId: 'routine-pain-assessment-reassessment', fieldValues: {}, manualText: null, format: 'concise', lastUpdated: Date.now() },
-  { id: 'slot_3', bedLabel: 'Bed 303', templateId: 'emergency-fever-febrile-episode', fieldValues: {}, manualText: null, format: 'concise', lastUpdated: Date.now() },
-  { id: 'slot_4', bedLabel: 'Bed 304', templateId: 'routine-positioning-turn', fieldValues: {}, manualText: null, format: 'concise', lastUpdated: Date.now() },
+  { id: 'slot_1', bedLabel: 'Bed 301', templateId: 'routine-head-to-toe', fieldValues: {}, manualText: '', format: 'concise', lastUpdated: Date.now() },
+  { id: 'slot_2', bedLabel: 'Bed 302', templateId: 'routine-pain-assessment-reassessment', fieldValues: {}, manualText: '', format: 'concise', lastUpdated: Date.now() },
+  { id: 'slot_3', bedLabel: 'Bed 303', templateId: 'emergency-fever-febrile-episode', fieldValues: {}, manualText: '', format: 'concise', lastUpdated: Date.now() },
+  { id: 'slot_4', bedLabel: 'Bed 304', templateId: 'routine-positioning-turn', fieldValues: {}, manualText: '', format: 'concise', lastUpdated: Date.now() },
 ];
 
 export default function App() {
@@ -112,8 +112,21 @@ export default function App() {
   // Field values for active template
   const [fieldValues, setFieldValues] = useState<Record<string, string>>({});
 
-  // Direct manual overrides on compiled text
-  const [manualText, setManualText] = useState<string | null>(null);
+  // Direct manual note text - empty by default
+  const [manualText, setManualText] = useState<string>(() => {
+    try {
+      const savedSlots = localStorage.getItem(STORAGE_KEY_SLOTS);
+      const activeId = localStorage.getItem(STORAGE_KEY_ACTIVE_SLOT);
+      if (savedSlots && activeId) {
+        const slots: PatientSlot[] = JSON.parse(savedSlots);
+        const active = slots.find((s) => s.id === activeId);
+        if (active && typeof active.manualText === 'string') {
+          return active.manualText;
+        }
+      }
+    } catch {}
+    return '';
+  });
 
   // Modals
   const [isEditorModalOpen, setIsEditorModalOpen] = useState(false);
@@ -200,18 +213,13 @@ export default function App() {
     }
   }, [colorTheme]);
 
-  // Initialize fields when template changes
+  // Clear fields when template changes
   useEffect(() => {
     if (isSwitchingSlotRef.current) {
       isSwitchingSlotRef.current = false;
       return;
     }
-    const defaults: Record<string, string> = {};
-    selectedTemplate.fields.forEach((f) => {
-      defaults[f.id] = f.defaultValue;
-    });
-    setFieldValues(defaults);
-    setManualText(null);
+    setFieldValues({});
   }, [selectedTemplate.id]);
 
   // Save patient slots to localStorage
@@ -267,13 +275,10 @@ export default function App() {
     }
   }, [activeFormat]);
 
-  // Compute final note text
+  // Compute final note text (empty by default)
   const noteOutput = useMemo(() => {
-    if (manualText !== null) {
-      return manualText;
-    }
-    return compileNoteText(selectedTemplate, fieldValues, activeFormat);
-  }, [selectedTemplate, fieldValues, activeFormat, manualText]);
+    return manualText ?? '';
+  }, [manualText]);
 
   // Filter templates
   const filteredTemplates = useMemo(() => {
@@ -359,18 +364,8 @@ export default function App() {
       isSwitchingSlotRef.current = true;
       const targetTemplate = allTemplates.find((t) => t.id === target.templateId) || INITIAL_TEMPLATES[0];
       setSelectedTemplate(targetTemplate);
-
-      if (target.fieldValues && Object.keys(target.fieldValues).length > 0) {
-        setFieldValues(target.fieldValues);
-      } else {
-        const defs: Record<string, string> = {};
-        targetTemplate.fields.forEach((f) => {
-          defs[f.id] = f.defaultValue;
-        });
-        setFieldValues(defs);
-      }
-
-      setManualText(target.manualText);
+      setFieldValues(target.fieldValues || {});
+      setManualText(target.manualText ?? '');
       setActiveFormat(target.format || 'concise');
       setToastMessage(`Switched to ${target.bedLabel}`);
       setTimeout(() => setToastMessage(null), 1800);
@@ -396,19 +391,13 @@ export default function App() {
       candidateLabel = `Bed 30${nextNum}`;
     }
 
-    // Default fields for the active template
-    const defaultFields: Record<string, string> = {};
-    selectedTemplate.fields.forEach((f) => {
-      defaultFields[f.id] = f.defaultValue;
-    });
-
     const newId = `slot_${Date.now()}`;
     const newSlot: PatientSlot = {
       id: newId,
       bedLabel: candidateLabel,
       templateId: selectedTemplate.id,
-      fieldValues: defaultFields,
-      manualText: null,
+      fieldValues: {},
+      manualText: '', // Empty note field by default
       format: activeFormat,
       lastUpdated: Date.now(),
     };
@@ -429,13 +418,13 @@ export default function App() {
     });
     updatedSlots.push(newSlot);
 
-    // 2. Atomically activate new slot and initialize workspace
+    // 2. Atomically activate new slot and initialize workspace with empty note field
     isSwitchingSlotRef.current = true;
     setPatientSlots(updatedSlots);
     setActiveSlotId(newId);
-    setFieldValues(defaultFields);
-    setManualText(null);
-    setToastMessage(`Added and switched to ${candidateLabel}`);
+    setFieldValues({});
+    setManualText('');
+    setToastMessage(`Added and switched to ${candidateLabel} (Empty note)`);
     setTimeout(() => setToastMessage(null), 1800);
   };
 
@@ -450,17 +439,8 @@ export default function App() {
       const targetTemplate = allTemplates.find((t) => t.id === nextSlot.templateId) || INITIAL_TEMPLATES[0];
       setSelectedTemplate(targetTemplate);
 
-      if (nextSlot.fieldValues && Object.keys(nextSlot.fieldValues).length > 0) {
-        setFieldValues(nextSlot.fieldValues);
-      } else {
-        const defs: Record<string, string> = {};
-        targetTemplate.fields.forEach((f) => {
-          defs[f.id] = f.defaultValue;
-        });
-        setFieldValues(defs);
-      }
-
-      setManualText(nextSlot.manualText);
+      setFieldValues(nextSlot.fieldValues || {});
+      setManualText(nextSlot.manualText ?? '');
       setActiveFormat(nextSlot.format || 'concise');
       setActiveSlotId(nextSlot.id);
       setToastMessage(`Removed bed. Switched to ${nextSlot.bedLabel}`);
@@ -483,37 +463,55 @@ export default function App() {
 
   const handleSelectTemplate = (template: NoteTemplate) => {
     setSelectedTemplate(template);
-    setManualText(null);
-    syncCurrentSlot({ templateId: template.id, manualText: null });
+    // When nurse selects a template from library, load template into note field with bracketed empty spaces
+    const compiled = compileNoteText(template, {}, activeFormat);
+    setManualText(compiled);
+    setFieldValues({});
+    syncCurrentSlot({ templateId: template.id, manualText: compiled, fieldValues: {} });
     setMobileTab('studio');
+    setToastMessage(`Loaded: ${template.title}`);
+    setTimeout(() => setToastMessage(null), 1800);
   };
 
   const handleFieldChange = (fieldId: string, value: string) => {
     setFieldValues((prev) => {
       const next = { ...prev, [fieldId]: value };
-      syncCurrentSlot({ fieldValues: next, manualText: null });
+      const compiled = compileNoteText(selectedTemplate, next, activeFormat);
+      setManualText(compiled);
+      syncCurrentSlot({ fieldValues: next, manualText: compiled });
       return next;
     });
-    setManualText(null);
   };
 
   const handleResetDefaults = () => {
-    const defaults: Record<string, string> = {};
-    selectedTemplate.fields.forEach((f) => {
-      defaults[f.id] = f.defaultValue;
-    });
-    setFieldValues(defaults);
-    setManualText(null);
-    syncCurrentSlot({ fieldValues: defaults, manualText: null });
-    setToastMessage('Note reset to template defaults');
+    setFieldValues({});
+    const emptyTemplate = compileNoteText(selectedTemplate, {}, activeFormat);
+    setManualText(emptyTemplate);
+    syncCurrentSlot({ fieldValues: {}, manualText: emptyTemplate });
+    setToastMessage('Note reset with empty bracketed fields');
     setTimeout(() => setToastMessage(null), 2000);
   };
 
   const handleAppendSnippet = (snippet: string) => {
     const current = noteOutput;
-    const updated = `${current}\n\n${snippet}`;
+    const updated = current.trim() ? `${current}\n\n${snippet}` : snippet;
     setManualText(updated);
     syncCurrentSlot({ manualText: updated });
+  };
+
+  const handleTextChange = (newText: string) => {
+    setManualText(newText);
+    syncCurrentSlot({ manualText: newText });
+  };
+
+  const handleChangeFormat = (format: NoteFormatType) => {
+    setActiveFormat(format);
+    syncCurrentSlot({ format });
+    if (manualText && manualText.trim() !== '') {
+      const recompiled = compileNoteText(selectedTemplate, fieldValues, format);
+      setManualText(recompiled);
+      syncCurrentSlot({ format, manualText: recompiled });
+    }
   };
 
   const handleOpenCreateTemplate = () => {
@@ -553,12 +551,9 @@ export default function App() {
         ...updatedTemplate,
         isModified: isDefault ? true : updatedTemplate.isModified,
       });
-      const newDefaults: Record<string, string> = {};
-      updatedTemplate.fields.forEach((f) => {
-        newDefaults[f.id] = fieldValues[f.id] ?? f.defaultValue;
-      });
-      setFieldValues(newDefaults);
-      setManualText(null);
+      const recompiled = compileNoteText(updatedTemplate, fieldValues, activeFormat);
+      setManualText(recompiled);
+      syncCurrentSlot({ templateId: updatedTemplate.id, manualText: recompiled });
     }
 
     setTimeout(() => setToastMessage(null), 2500);
@@ -576,12 +571,10 @@ export default function App() {
 
     if (selectedTemplate.id === templateId) {
       setSelectedTemplate(pristine);
-      const defaults: Record<string, string> = {};
-      pristine.fields.forEach((f) => {
-        defaults[f.id] = f.defaultValue;
-      });
-      setFieldValues(defaults);
-      setManualText(null);
+      setFieldValues({});
+      const recompiled = compileNoteText(pristine, {}, activeFormat);
+      setManualText(recompiled);
+      syncCurrentSlot({ templateId: pristine.id, manualText: recompiled });
     }
 
     setToastMessage(`Restored "${pristine.title}" to default template`);
@@ -601,12 +594,10 @@ export default function App() {
       const pristine = getInitialTemplateById(selectedTemplate.id);
       if (pristine) {
         setSelectedTemplate(pristine);
-        const defaults: Record<string, string> = {};
-        pristine.fields.forEach((f) => {
-          defaults[f.id] = f.defaultValue;
-        });
-        setFieldValues(defaults);
-        setManualText(null);
+        setFieldValues({});
+        const recompiled = compileNoteText(pristine, {}, activeFormat);
+        setManualText(recompiled);
+        syncCurrentSlot({ templateId: pristine.id, manualText: recompiled });
       }
     }
     setToastMessage('All templates restored to system defaults');
@@ -748,14 +739,14 @@ export default function App() {
           <NoteStudio
             template={selectedTemplate}
             noteText={noteOutput}
-            onTextChange={setManualText}
+            onTextChange={handleTextChange}
             fieldValues={fieldValues}
             onFieldChange={handleFieldChange}
             onResetDefaults={handleResetDefaults}
             onDeleteCustomTemplate={handleDeleteCustomTemplate}
             onAppendSnippet={handleAppendSnippet}
             activeFormat={activeFormat}
-            onChangeFormat={setActiveFormat}
+            onChangeFormat={handleChangeFormat}
             isSidebarCollapsed={isSidebarCollapsed}
             onToggleSidebar={() => setIsSidebarCollapsed((prev) => !prev)}
             isZenMode={isZenMode}

@@ -1,8 +1,8 @@
 import { NoteTemplate } from './templates';
 
 /**
- * WARD 208 CCU • Staff documentation guide
- * Official clinical note templates transcribed directly from Ward 208 Critical Care Unit documentation guidelines.
+ * CRITICAL CARE UNIT (CCU) • Clinical documentation guide
+ * Standard clinical note templates for Critical Care Unit documentation.
  * All empty spaces (__________) are preserved with brackets so they are easily modifiable by nurses in the editor.
  */
 
@@ -10,11 +10,11 @@ export const CCU_TEMPLATES: NoteTemplate[] = [
   // 1. MECHANICALLY VENTILATED / CRITICALLY ILL PATIENT - DETAILED NOTE
   {
     id: 'ccu-mech-vent-detailed',
-    title: 'CCU: Mechanically Ventilated / Critically Ill Patient (Detailed Note)',
+    title: 'Critical Care: Mechanically Ventilated / Critically Ill Patient (Detailed Note)',
     category: 'ccu',
-    categoryLabel: 'Ward 208 CCU',
-    description: 'Ward 208 CCU: Comprehensive assessment of intubated mechanically ventilated patient covering ETT, ventilator parameters, sedation, hemodynamics, lines, infusions, and drains.',
-    tags: ['ward 208', 'ccu', 'ventilator', 'ett', 'critically ill', 'sedation', 'icu', 'hemodynamics', 'lines', 'drains'],
+    categoryLabel: 'Critical Care (CCU)',
+    description: 'Critical Care (CCU): Comprehensive assessment of intubated mechanically ventilated patient covering ETT, ventilator parameters, sedation, hemodynamics, lines, infusions, and drains.',
+    tags: ['critical care', 'ccu', 'ventilator', 'ett', 'critically ill', 'sedation', 'icu', 'hemodynamics', 'lines', 'drains'],
     isProcedure: true,
     procedureCategory: 'respiratory',
     procedureCategoryLabel: 'Airway & Ventilation',
@@ -37,14 +37,14 @@ export const CCU_TEMPLATES: NoteTemplate[] = [
       { id: 'infusions', label: 'Active Infusions', defaultValue: 'Norepinephrine 0.04 mcg/kg/min; Propofol 15 mcg/kg/min running as prescribed', options: ['Norepinephrine 0.04 mcg/kg/min; Propofol 15 mcg/kg/min running as prescribed', 'Propofol 20 mcg/kg/min; Fentanyl 50 mcg/hr running as prescribed', 'Maintenance 0.9% NS @ 75 mL/hr running as prescribed', 'None running at present'] },
     ],
     formats: {
-      narrative: `WARD 208 - CCU
+      narrative: `CRITICAL CARE UNIT (CCU)
 MECHANICALLY VENTILATED / CRITICALLY ILL PATIENT - DETAILED NOTE
 
 Patient received in bed, mechanically ventilated via ETT size [____] fixed at [____] cm. Conscious level/GCS [____]/15; sedation score [__________] if applicable. Head-to-toe assessment completed. Ventilator mode [__________], FiO2 [____]%, PEEP [____], RR [____], TV/PS [__________] as prescribed. SpO2 [____]%. Bilateral air entry [__________]; suction performed as clinically indicated with response [__________]. ETT position/fixation checked and secure. Ventilator circuit/connections checked, patent, supported and free from kinking/tension. HOB maintained at 30-45 degrees unless contraindicated. Oral/airway care provided as indicated.
 
 Cardiac rhythm [__________], HR [____], BP [____]/[____], MAP [____]. Peripheral perfusion/pulses [__________]. IV/arterial/central lines assessed: [__________]. Dressings clean/dry/intact [or document findings]. Infusions [__________] running as prescribed. Drains/CBD/NGT/other devices [__________] checked, secured and patent as applicable. Intake/output documented.`,
 
-      concise: `WARD 208 CCU • MECHANICALLY VENTILATED / CRITICALLY ILL PATIENT:
+      concise: `CRITICAL CARE (CCU) • MECHANICALLY VENTILATED / CRITICALLY ILL PATIENT:
 • Airway & Tube: Mechanically ventilated via ETT size [____] fixed at [____] cm at teeth/lip. Fixation secure, circuit supported, free from kinking/tension. HOB 30-45°. Oral/airway care provided.
 • Neurological & Sedation: Conscious level/GCS [____]/15; sedation score [__________] if applicable. Head-to-toe assessment completed.
 • Ventilator Settings: Mode [__________] | FiO2 [____]% | PEEP [____] cmH2O | RR [____] /min | TV/PS [__________] as prescribed.
@@ -71,11 +71,11 @@ Cardiac rhythm [__________], HR [____], BP [____]/[____], MAP [____]. Peripheral
   // 2. REPOSITIONING DOCUMENTATION
   {
     id: 'ccu-repositioning-doc',
-    title: 'CCU: Repositioning Documentation',
+    title: 'Critical Care: Repositioning Documentation',
     category: 'ccu',
-    categoryLabel: 'Ward 208 CCU',
-    description: 'Ward 208 CCU: Repositioning documentation including pre-assessment, 30° lateral/supine turn, HOB elevation, body alignment, heel offloading, and 9-point skin inspection.',
-    tags: ['ward 208', 'ccu', 'repositioning', 'turning', 'skin assessment', 'pressure injury', 'heels'],
+    categoryLabel: 'Critical Care (CCU)',
+    description: 'Critical Care (CCU): Repositioning documentation including pre-assessment, 30° lateral/supine turn, HOB elevation, body alignment, heel offloading, and 9-point skin inspection.',
+    tags: ['critical care', 'ccu', 'repositioning', 'turning', 'skin assessment', 'pressure injury', 'heels'],
     isProcedure: true,
     procedureCategory: 'bedside',
     procedureCategoryLabel: 'Bedside Care & Skin',
@@ -86,14 +86,14 @@ Cardiac rhythm [__________], HR [____], BP [____]/[____], MAP [____]. Peripheral
       { id: 'abnormalFinding', label: 'Abnormal Findings', defaultValue: 'none noted', options: ['none noted', 'mild non-blanchable erythema over left greater trochanter', 'moisture-associated skin damage to perineal fold'] },
     ],
     formats: {
-      narrative: `WARD 208 - CCU
+      narrative: `CRITICAL CARE UNIT (CCU)
 Repositioning Documentation
 
 Patient assessed prior to repositioning. Current position and skin/pressure areas checked. Patient repositioned to right 30° lateral / left 30° lateral / supine position according to the individualized repositioning schedule and clinical condition. Head of bed maintained at [____]° as clinically appropriate. Proper body alignment maintained. Appropriate lifting/turning technique used to minimize friction and shear; patient not dragged across the bed. Pillows/positioning aids placed appropriately to support the head/neck, back, upper and lower limbs and to prevent direct pressure between bony prominences. Heels completely offloaded from the mattress when indicated.
 
 Skin assessed during repositioning, including occiput, ears, shoulders/scapulae, elbows, sacrum/coccyx, greater trochanters, ischial areas, knees, ankles/malleoli and heels as applicable. Skin condition: [__________]. No new non-blanchable redness, discoloration, moisture-associated skin damage or skin breakdown noted / abnormal finding: [__________].`,
 
-      concise: `WARD 208 CCU • REPOSITIONING & SKIN ASSESSMENT:
+      concise: `CRITICAL CARE (CCU) • REPOSITIONING & SKIN ASSESSMENT:
 • Position Change: Pre-turn assessment completed. Repositioned to [right 30° lateral / left 30° lateral / supine position] per turning schedule.
 • Bed & Alignment: Head of bed maintained at [____]°. Proper body alignment ensured; lift/slide technique used without dragging to minimize friction and shear.
 • Supports & Offloading: Pillows/positioning aids placed at head/neck, back, upper/lower limbs to prevent pressure between bony prominences. Heels completely offloaded from mattress.
@@ -118,11 +118,11 @@ Skin assessed during repositioning, including occiput, ears, shoulders/scapulae,
   // 3. SUCTIONING: ORAL / ENDOTRACHEAL / TRACHEOSTOMY
   {
     id: 'ccu-suctioning-airway',
-    title: 'CCU: Suctioning (Oral / Endotracheal / Tracheostomy)',
+    title: 'Critical Care: Suctioning (Oral / Endotracheal / Tracheostomy)',
     category: 'ccu',
-    categoryLabel: 'Ward 208 CCU',
-    description: 'Ward 208 CCU: Airway suctioning documentation covering route (oral/ETT/trach), secretion color, amount, consistency, tolerance, and SpO2 maintenance.',
-    tags: ['ward 208', 'ccu', 'suctioning', 'ett', 'trach', 'oral suction', 'secretions', 'airway'],
+    categoryLabel: 'Critical Care (CCU)',
+    description: 'Critical Care (CCU): Airway suctioning documentation covering route (oral/ETT/trach), secretion color, amount, consistency, tolerance, and SpO2 maintenance.',
+    tags: ['critical care', 'ccu', 'suctioning', 'ett', 'trach', 'oral suction', 'secretions', 'airway'],
     isProcedure: true,
     procedureCategory: 'respiratory',
     procedureCategoryLabel: 'Airway & Suctioning',
@@ -135,12 +135,12 @@ Skin assessed during repositioning, including occiput, ears, shoulders/scapulae,
       { id: 'changes', label: 'Changes Noted', defaultValue: 'none; breath sounds cleared post-suctioning', options: ['none; breath sounds cleared post-suctioning', 'transient drop to 94%, recovered to 98% within 1 min', 'cough stimulated, airway cleared'] },
     ],
     formats: {
-      narrative: `WARD 208 - CCU
+      narrative: `CRITICAL CARE UNIT (CCU)
 Suctioning Documentation
 
 Suctioning: Oral / endotracheal / tracheostomy suctioning performed as indicated. Secretions noted: color [__________], amount (scant / small / moderate / large) [__________], consistency (thin / thick) [__________]. Patient tolerated the procedure well. SpO₂ maintained at [____]% / changes noted: [__________]`,
 
-      concise: `WARD 208 CCU • AIRWAY SUCTIONING NOTE:
+      concise: `CRITICAL CARE (CCU) • AIRWAY SUCTIONING NOTE:
 • Procedure & Route: [Oral / endotracheal / tracheostomy] suctioning performed as clinically indicated.
 • Secretion Characteristics: Color: [__________] | Amount: [scant / small / moderate / large] [__________] | Consistency: [thin / thick] [__________].
 • Tolerance & Oxygenation: Patient tolerated the procedure well. SpO₂ maintained at [____]% / changes noted: [__________].
@@ -164,11 +164,11 @@ Suctioning: Oral / endotracheal / tracheostomy suctioning performed as indicated
   // 4. POSITIONING — COMPREHENSIVE BEDSIDE ENTRY
   {
     id: 'ccu-positioning-comprehensive',
-    title: 'CCU: Positioning — Comprehensive Bedside Entry',
+    title: 'Critical Care: Positioning — Comprehensive Bedside Entry',
     category: 'ccu',
-    categoryLabel: 'Ward 208 CCU',
-    description: 'Ward 208 CCU: Extensive bedside turn record with pre/post vitals, comfort/pain, 6 anatomical pressure sites, device checks, and tolerance.',
-    tags: ['ward 208', 'ccu', 'positioning', 'comprehensive', 'skin check', 'devices', 'vitals', 'turning'],
+    categoryLabel: 'Critical Care (CCU)',
+    description: 'Critical Care (CCU): Extensive bedside turn record with pre/post vitals, comfort/pain, 6 anatomical pressure sites, device checks, and tolerance.',
+    tags: ['critical care', 'ccu', 'positioning', 'comprehensive', 'skin check', 'devices', 'vitals', 'turning'],
     isProcedure: true,
     procedureCategory: 'bedside',
     procedureCategoryLabel: 'Bedside Care & Skin',
@@ -187,12 +187,12 @@ Suctioning: Oral / endotracheal / tracheostomy suctioning performed as indicated
       { id: 'bpPost', label: 'Post BP (mmHg)', defaultValue: '124/72', options: ['120/70', '124/72', '128/76'] },
     ],
     formats: {
-      narrative: `WARD 208 - CCU
+      narrative: `CRITICAL CARE UNIT (CCU)
 Positioning — Comprehensive Bedside Entry
 
 At [____] hrs patient assessed before turn; initial position [__________], comfort/pain [__________], SpO₂ [____]%, HR [____], BP [____]/[____]. Repositioned to [__________] (supine/right 30° lateral/left 30° lateral/other clinically appropriate position). Head of bed elevated [____]° as clinically appropriate. Head/neck/spine and limbs aligned; pillows/positioning supports placed at [__________] to protect bony prominences and avoid pressure between knees/ankles. Heels fully offloaded when indicated using [__________]. Lift/slide technique used to reduce friction and shear; patient not dragged. Skin assessed at accessible pressure areas: occiput/ears [__________], scapulae/elbows [__________], sacrum/coccyx [__________], hips/trochanters [__________], knees/malleoli [__________], heels [__________]. Moisture/redness/non- blanchable discoloration/skin breakdown: [__________]. Skin under/around medical devices checked: [__________]. IV/CVC/arterial lines, urinary catheter, drains and oxygen/ETT/ventilator circuit secured and checked before/after turning as applicable: [__________]. After turn SpO₂ [____]%, HR [____], BP [____]/[____]; breathing/comfort [__________]. Patient tolerated [__________].`,
 
-      concise: `WARD 208 CCU • COMPREHENSIVE BEDSIDE POSITIONING ENTRY:
+      concise: `CRITICAL CARE (CCU) • COMPREHENSIVE BEDSIDE POSITIONING ENTRY:
 • Pre-Turn Baseline ([____] hrs): Initial position [__________] | Comfort/pain [__________] | SpO2 [____]% | HR [____] | BP [____]/[____].
 • New Position: Repositioned to [__________] (supine / right 30° lateral / left 30° lateral). HOB elevated [____]°.
 • Alignment & Offloading: Limbs and spine aligned; pillows/supports placed at [__________]. Heels fully offloaded using [__________]. Lift/slide technique utilized without dragging.
@@ -218,11 +218,11 @@ At [____] hrs patient assessed before turn; initial position [__________], comfo
   // 5. PRESSURE INJURY PATIENT
   {
     id: 'ccu-pressure-injury-patient',
-    title: 'CCU: Pressure Injury Patient Assessment & Care',
+    title: 'Critical Care: Pressure Injury Patient Assessment & Care',
     category: 'ccu',
-    categoryLabel: 'Ward 208 CCU',
-    description: 'Ward 208 CCU: Pressure injury documentation including anatomical location, staging, dimensions, exudate, Braden/PUSH scores, offloading, wound care, and escalation.',
-    tags: ['ward 208', 'ccu', 'pressure injury', 'braden', 'push score', 'staging', 'wound care', 'offloading'],
+    categoryLabel: 'Critical Care (CCU)',
+    description: 'Critical Care (CCU): Pressure injury documentation including anatomical location, staging, dimensions, exudate, Braden/PUSH scores, offloading, wound care, and escalation.',
+    tags: ['critical care', 'ccu', 'pressure injury', 'braden', 'push score', 'staging', 'wound care', 'offloading'],
     isProcedure: true,
     procedureCategory: 'wound',
     procedureCategoryLabel: 'Wound & Skin Staging',
@@ -237,12 +237,12 @@ At [____] hrs patient assessed before turn; initial position [__________], comfo
       { id: 'dressing', label: 'Dressing Applied', defaultValue: 'cleansed with sterile NS, hydrocolloid / foam dressing applied', options: ['cleansed with sterile NS, hydrocolloid / foam dressing applied', 'cleansed with NS, barrier film and bordered silicone foam applied', 'cleansed with NS, hydrogel with secondary foam dressing applied'] },
     ],
     formats: {
-      narrative: `WARD 208 - CCU
+      narrative: `CRITICAL CARE UNIT (CCU)
 PRESSURE INJURY PATIENT
 
 Skin assessment completed. Existing pressure injury located at [__________] (exact anatomical/bony prominence), Stage [_____]. Wound size [____] x [____] x [____] cm [if measured], wound bed [__________], exudate [__________], surrounding skin [__________]. Braden score [____]; reassessed this shift. Direct pressure over affected area avoided. Patient repositioned to [__________] according to individualized care plan. Appropriate offloading/pressure- relieving device [__________] used; heels offloaded as indicated. Skin kept clean and dry; moisture/friction/shear prevention measures maintained. Dressing/wound care performed as ordered using [__________]; patient tolerated [__________]. PUSH assessment score [____] / updated as required. Patient/family education provided regarding repositioning, skin care and pressure injury prevention as applicable. New/deteriorating findings [__________]; Dr./in-charge/wound team informed at [____]; advice/order [__________]. Reassessment/response [__________]. Pressure injury status included in SBAR/handover.`,
 
-      concise: `WARD 208 CCU • PRESSURE INJURY ASSESSMENT & MANAGEMENT:
+      concise: `CRITICAL CARE (CCU) • PRESSURE INJURY ASSESSMENT & MANAGEMENT:
 • Location & Stage: Located at [__________] (anatomical prominence) | Stage: [_____].
 • Wound Characteristics: Size: [____] x [____] x [____] cm [if measured] | Bed: [__________] | Exudate: [__________] | Periwound: [__________].
 • Clinical Scores: Braden score [____] (reassessed this shift) | PUSH assessment score: [____].
@@ -268,21 +268,21 @@ Skin assessment completed. Existing pressure injury located at [__________] (exa
   // 6. POSITIONING FOR BEDRIDDEN WITH LIMITED MOBILITY
   {
     id: 'ccu-positioning-limited-mobility',
-    title: 'CCU: Positioning For Bedridden With Limited Mobility',
+    title: 'Critical Care: Positioning For Bedridden With Limited Mobility',
     category: 'ccu',
-    categoryLabel: 'Ward 208 CCU',
-    description: 'Ward 208 CCU: Documentation for partially bedridden patients requiring assistance with daily activities, position changes, skin checks, and fall prevention.',
-    tags: ['ward 208', 'ccu', 'bedridden', 'limited mobility', 'positioning', 'fall prevention', 'skin check'],
+    categoryLabel: 'Critical Care (CCU)',
+    description: 'Critical Care (CCU): Documentation for partially bedridden patients requiring assistance with daily activities, position changes, skin checks, and fall prevention.',
+    tags: ['critical care', 'ccu', 'bedridden', 'limited mobility', 'positioning', 'fall prevention', 'skin check'],
     fields: [
       { id: 'assessment', label: 'Skin & Pressure Assessment', defaultValue: 'skin intact over all bony prominences, no erythema or breakdown', options: ['skin intact over all bony prominences, no erythema or breakdown', 'mild blanchable redness over sacrum, barrier cream applied', 'dry skin, moisturizer applied to lower limbs'] },
     ],
     formats: {
-      narrative: `WARD 208 - CCU
+      narrative: `CRITICAL CARE UNIT (CCU)
 Positioning For Bedridden With Limited Mobility:
 
 Patient is partially bedridden with limited mobility, requiring assistance with daily activities. Able to change position in bed with minimal assistance. Repositioning encouraged and assisted as needed. Skin and pressure areas assessed ([write the assessment]). Fall prevention measures maintained.`,
 
-      concise: `WARD 208 CCU • BEDRIDDEN WITH LIMITED MOBILITY NOTE:
+      concise: `CRITICAL CARE (CCU) • BEDRIDDEN WITH LIMITED MOBILITY NOTE:
 • Mobility Status: Partially bedridden with limited mobility; requires assistance with daily activities.
 • Bed Mobility: Able to change position in bed with minimal assistance; repositioning encouraged and assisted as needed.
 • Skin & Pressure Assessment: [write the assessment].
@@ -306,11 +306,11 @@ Patient is partially bedridden with limited mobility, requiring assistance with 
   // 7. PATIENT REFUSED REPOSITIONING
   {
     id: 'ccu-refused-repositioning',
-    title: 'CCU: Patient Refused Repositioning',
+    title: 'Critical Care: Patient Refused Repositioning',
     category: 'ccu',
-    categoryLabel: 'Ward 208 CCU',
-    description: 'Ward 208 CCU: Documentation when a patient declines scheduled repositioning, reasons stated, risks explained, skin assessment as tolerated, and escalation.',
-    tags: ['ward 208', 'ccu', 'refusal', 'repositioning', 'declined turn', 'skin risk', 'escalation'],
+    categoryLabel: 'Critical Care (CCU)',
+    description: 'Critical Care (CCU): Documentation when a patient declines scheduled repositioning, reasons stated, risks explained, skin assessment as tolerated, and escalation.',
+    tags: ['critical care', 'ccu', 'refusal', 'repositioning', 'declined turn', 'skin risk', 'escalation'],
     fields: [
       { id: 'time', label: 'Time Offered (hrs)', defaultValue: '10:00', options: ['08:00', '10:00', '12:00', '14:00', '16:00', '20:00', '22:00'] },
       { id: 'reason', label: 'Reason for Declining', defaultValue: 'fatigue and wanting to sleep', options: ['fatigue and wanting to sleep', 'acute pain when turning onto side', 'preference to remain supine for family visit', 'general discomfort'] },
@@ -318,12 +318,12 @@ Patient is partially bedridden with limited mobility, requiring assistance with 
       { id: 'escalation', label: 'In-Charge / Physician Notification', defaultValue: 'charge nurse informed; will re-attempt turning in 1 hour', options: ['charge nurse informed; will re-attempt turning in 1 hour', 'attending physician notified during rounds; pain regimen adjusted', 'notified in-charge RN; patient monitoring continued'] },
     ],
     formats: {
-      narrative: `WARD 208 - CCU
+      narrative: `CRITICAL CARE UNIT (CCU)
 PATIENT REFUSED REPOSITIONING
 
 Repositioning offered at [____] and importance of regular position change/pressure injury prevention explained. Patient declined repositioning due to [__________]. Risks explained and patient verbalized understanding [if applicable]. Skin/pressure areas assessed as tolerated: [__________]. Comfort measures provided. Will continue to encourage/reassess. In-charge/physician informed if clinically indicated: [__________].`,
 
-      concise: `WARD 208 CCU • PATIENT REFUSAL OF REPOSITIONING:
+      concise: `CRITICAL CARE (CCU) • PATIENT REFUSAL OF REPOSITIONING:
 • Offer & Education: Repositioning offered at [____] hrs; clinical necessity of regular position changes and pressure injury prevention reinforced.
 • Declination & Rationale: Patient declined repositioning due to: [__________].
 • Risk Communication: Risks of skin breakdown, pressure injury, and atelectasis explained; patient verbalized understanding [if applicable].
@@ -348,11 +348,11 @@ Repositioning offered at [____] and importance of regular position change/pressu
   // 8. DESATURATION / INSTABILITY DURING REPOSITIONING
   {
     id: 'ccu-desaturation-instability',
-    title: 'CCU: Desaturation / Instability During Repositioning',
+    title: 'Critical Care: Desaturation / Instability During Repositioning',
     category: 'ccu',
-    categoryLabel: 'Ward 208 CCU',
-    description: 'Ward 208 CCU: Acute event note for oxygen desaturation, hemodynamic instability, or distress during repositioning, circuit checks, and emergency interventions.',
-    tags: ['ward 208', 'ccu', 'desaturation', 'hypoxemia', 'instability', 'turning', 'ventilator', 'emergency'],
+    categoryLabel: 'Critical Care (CCU)',
+    description: 'Critical Care (CCU): Acute event note for oxygen desaturation, hemodynamic instability, or distress during repositioning, circuit checks, and emergency interventions.',
+    tags: ['critical care', 'ccu', 'desaturation', 'hypoxemia', 'instability', 'turning', 'ventilator', 'emergency'],
     isProcedure: true,
     procedureCategory: 'emergency',
     procedureCategoryLabel: 'Acute Instability & Rescue',
@@ -369,12 +369,12 @@ Repositioning offered at [____] and importance of regular position change/pressu
       { id: 'condition', label: 'Final Patient Condition', defaultValue: 'settled, breathing comfortably, vitals stabilized', options: ['settled, breathing comfortably, vitals stabilized', 'calm, synchronizing with ventilator, resting'] },
     ],
     formats: {
-      narrative: `WARD 208 - CCU
+      narrative: `CRITICAL CARE UNIT (CCU)
 Desaturation / Instability During Repositioning
 
 Repositioning initiated at [____] with airway/lines/devices secured. During turning, SpO2 decreased from [____]% to [____]% / BP changed from [__________] to [__________] / patient developed [__________]. Repositioning stopped/position adjusted and patient reassessed. ETT/airway, ventilator circuit and connections checked as applicable. Intervention provided: [__________]. Dr./in-charge/RT informed at [____]; advice/order [__________]. Following intervention, SpO2 [____]%, BP [__________], patient condition [__________]. Continued close monitoring.`,
 
-      concise: `WARD 208 CCU • DESATURATION / INSTABILITY DURING TURNING:
+      concise: `CRITICAL CARE (CCU) • DESATURATION / INSTABILITY DURING TURNING:
 • Event Onset: Repositioning initiated at [____] with all lines and airway secured.
 • Acute Deterioration: SpO2 dropped from [____]% to [____]% | BP shifted from [__________] to [__________] | Developed: [__________].
 • Immediate Action: Repositioning halted immediately; position adjusted. ETT position, circuit, and connections inspected and verified patent.
@@ -400,11 +400,11 @@ Repositioning initiated at [____] with airway/lines/devices secured. During turn
   // 9. CARDIAC-MONITORED PATIENT — NO PAIN
   {
     id: 'ccu-cardiac-monitored-no-pain',
-    title: 'CCU: Cardiac-Monitored Patient — No Pain',
+    title: 'Critical Care: Cardiac-Monitored Patient — No Pain',
     category: 'ccu',
-    categoryLabel: 'Ward 208 CCU',
-    description: 'Ward 208 CCU: Routine shift assessment for telemetry/cardiac monitored patient without chest pain: rhythm, vitals, IV access, and fall risk.',
-    tags: ['ward 208', 'ccu', 'cardiac', 'telemetry', 'no pain', 'vitals', 'rhythm', 'monitoring'],
+    categoryLabel: 'Critical Care (CCU)',
+    description: 'Critical Care (CCU): Routine shift assessment for telemetry/cardiac monitored patient without chest pain: rhythm, vitals, IV access, and fall risk.',
+    tags: ['critical care', 'ccu', 'cardiac', 'telemetry', 'no pain', 'vitals', 'rhythm', 'monitoring'],
     fields: [
       { id: 'time', label: 'Time Received (hrs)', defaultValue: '07:30', options: ['07:30', '11:00', '15:30', '19:30', '23:00'] },
       { id: 'rhythm', label: 'Cardiac Rhythm', defaultValue: 'Normal sinus rhythm', options: ['Normal sinus rhythm', 'Sinus bradycardia', 'Atrial fibrillation with controlled VR', 'Atrial flutter', 'First-degree AV block'] },
@@ -418,12 +418,12 @@ Repositioning initiated at [____] with airway/lines/devices secured. During turn
       { id: 'fallRisk', label: 'Fall Risk Status', defaultValue: 'low risk, fall precautions maintained', options: ['low risk, fall precautions maintained', 'moderate risk, yellow wristband in place, bed alarm armed', 'high risk, assist x 2 with ambulation'] },
     ],
     formats: {
-      narrative: `WARD 208 - CCU
+      narrative: `CRITICAL CARE UNIT (CCU)
 Cardiac-Monitored Patient — No Pain
 
 Patient received at [____] hrs, awake/alert [__________], oriented. Connected to continuous cardiac monitoring; rhythm [__________], heart rate [____] bpm, BP [____]/[____] mmHg, RR [____]/min, SpO₂ [____]% on [__________], temperature [____]°C. Patient denies chest pain, palpitations, dizziness, dyspnea or other symptoms at time of assessment / reports [__________]. Pain score [____]/10. IV access/site [__________]. (fall [__________])`,
 
-      concise: `WARD 208 CCU • CARDIAC-MONITORED BASELINE (NO PAIN):
+      concise: `CRITICAL CARE (CCU) • CARDIAC-MONITORED BASELINE (NO PAIN):
 • Status at [____] hrs: Awake, alert [__________], fully oriented.
 • Cardiac & Vitals: Continuous telemetry: [__________] | HR: [____] bpm | BP: [____]/[____] mmHg | RR: [____] /min | SpO2: [____]% on [__________] | Temp: [____]°C.
 • Symptom Screen: Denies chest pain, palpitations, dizziness, dyspnea, or discomfort / reports: [__________]. Pain score: [____]/10.
@@ -447,11 +447,11 @@ Patient received at [____] hrs, awake/alert [__________], oriented. Connected to
   // 10. CARDIAC-MONITORED PATIENT — WITH PAIN
   {
     id: 'ccu-cardiac-monitored-pain',
-    title: 'CCU: Cardiac-Monitored Patient — With Pain',
+    title: 'Critical Care: Cardiac-Monitored Patient — With Pain',
     category: 'ccu',
-    categoryLabel: 'Ward 208 CCU',
-    description: 'Ward 208 CCU: Acute chest/cardiac pain note: PQRST evaluation, 12-lead ECG, physician notification, medications, repeat assessment, and handover.',
-    tags: ['ward 208', 'ccu', 'cardiac', 'chest pain', 'pqrst', '12-lead ecg', 'telemetry', 'analgesia'],
+    categoryLabel: 'Critical Care (CCU)',
+    description: 'Critical Care (CCU): Acute chest/cardiac pain note: PQRST evaluation, 12-lead ECG, physician notification, medications, repeat assessment, and handover.',
+    tags: ['critical care', 'ccu', 'cardiac', 'chest pain', 'pqrst', '12-lead ecg', 'telemetry', 'analgesia'],
     isProcedure: true,
     procedureCategory: 'emergency',
     procedureCategoryLabel: 'Acute Chest Pain & Cardiac',
@@ -469,12 +469,12 @@ Patient received at [____] hrs, awake/alert [__________], oriented. Connected to
       { id: 'repeatScore', label: 'Repeat Pain Score (/10)', defaultValue: '1', options: ['0', '1', '2', '3', '4'] },
     ],
     formats: {
-      narrative: `WARD 208 - CCU
+      narrative: `CRITICAL CARE UNIT (CCU)
 Cardiac-Monitored Patient — With Pain
 
 At [____] hrs patient reported pain at [__________], onset [__________], duration [__________], score [____]/10, character [__________], radiation [__________], aggravating/relieving factors [__________]. Associated symptoms (e.g., dyspnea, diaphoresis, nausea, dizziness): [__________]. Vital signs BP [____]/[____], HR [____], RR [____], SpO₂ [____]%, rhythm [__________]. Patient assessed promptly; 12-lead ECG performed if indicated/ordered at [____] hrs, findings communicated [__________]. physician notified at [____] hrs; orders/advice [__________]. Prescribed intervention/medication [__________] administered at [____] hrs with monitoring for response/adverse effects. Repeat assessment at [____] hrs: pain [____]/10, BP [____]/[____], HR [____], SpO₂ [____]%, rhythm [__________]; associated symptoms [__________]. Further escalation/intervention [__________]. Patient education [__________]; close monitoring continued and handover updated.`,
 
-      concise: `WARD 208 CCU • ACUTE CARDIAC PAIN EPISODE:
+      concise: `CRITICAL CARE (CCU) • ACUTE CARDIAC PAIN EPISODE:
 • Pain Report ([____] hrs): Location: [__________] | Onset: [__________] | Duration: [__________] | Score: [____]/10 | Character: [__________] | Radiation: [__________] | Aggravating/relieving: [__________].
 • Associated Symptoms: [__________].
 • Initial Vitals & Rhythm: BP: [____]/[____] | HR: [____] | RR: [____] | SpO2: [____]% | Rhythm: [__________].
@@ -501,11 +501,11 @@ At [____] hrs patient reported pain at [__________], onset [__________], duratio
   // 11. LINES — PERIPHERAL IV
   {
     id: 'ccu-lines-piv',
-    title: 'CCU: Lines — Peripheral IV',
+    title: 'Critical Care: Lines — Peripheral IV',
     category: 'ccu',
-    categoryLabel: 'Ward 208 CCU',
-    description: 'Ward 208 CCU: Peripheral IV cannula site assessment for pain, erythema, swelling, leakage, infiltration, phlebitis, patency, running infusions, and tubing integrity.',
-    tags: ['ward 208', 'ccu', 'piv', 'peripheral iv', 'lines', 'patency', 'infusions', 'phlebitis'],
+    categoryLabel: 'Critical Care (CCU)',
+    description: 'Critical Care (CCU): Peripheral IV cannula site assessment for pain, erythema, swelling, leakage, infiltration, phlebitis, patency, running infusions, and tubing integrity.',
+    tags: ['critical care', 'ccu', 'piv', 'peripheral iv', 'lines', 'patency', 'infusions', 'phlebitis'],
     fields: [
       { id: 'site', label: 'Cannula Location', defaultValue: 'right forearm (20G)', options: ['right forearm (20G)', 'left forearm (20G)', 'right antecubital fossa (18G)', 'left antecubital fossa (18G)', 'right dorsal hand (22G)'] },
       { id: 'siteAssessment', label: 'Site Assessment', defaultValue: 'clean, dry, intact; no pain, redness, warmth, swelling, leakage, or infiltration', options: ['clean, dry, intact; no pain, redness, warmth, swelling, leakage, or infiltration', 'dressing dry, mild tenderness without erythema', 'slight redness at puncture site, monitored closely'] },
@@ -514,12 +514,12 @@ At [____] hrs patient reported pain at [__________], onset [__________], duratio
       { id: 'tubing', label: 'Tubing & Connections', defaultValue: 'secure, labeled, within expiration date, free of air bubbles', options: ['secure, labeled, within expiration date, free of air bubbles', 'tubing changed today, labeled with date and nurse initials', 'smart pump guardrails active'] },
     ],
     formats: {
-      narrative: `WARD 208 - CCU
+      narrative: `CRITICAL CARE UNIT (CCU)
 Lines — Peripheral IV
 
 Peripheral IV cannula at [__________]. Site assessed for pain, redness, warmth, swelling, leakage, infiltration, phlebitis and dressing integrity: [__________]. Cannula secured and patent as assessed; infusion/medication [__________] at ordered rate [__________]; line/tubing and connections checked [__________].`,
 
-      concise: `WARD 208 CCU • PERIPHERAL IV ASSESSMENT:
+      concise: `CRITICAL CARE (CCU) • PERIPHERAL IV ASSESSMENT:
 • Cannula Site: [__________].
 • Inspection: Assessed for pain, redness, warmth, swelling, leakage, infiltration, phlebitis, and dressing integrity: [__________].
 • Patency: Cannula secured and patent as assessed.
@@ -544,11 +544,11 @@ Peripheral IV cannula at [__________]. Site assessed for pain, redness, warmth, 
   // 12. LINES — CENTRAL VENOUS CATHETER
   {
     id: 'ccu-lines-cvc',
-    title: 'CCU: Lines — Central Venous Catheter',
+    title: 'Critical Care: Lines — Central Venous Catheter',
     category: 'ccu',
-    categoryLabel: 'Ward 208 CCU',
-    description: 'Ward 208 CCU: Central Venous Catheter (CVC) type/site, lumens, dressing integrity, infection signs, clamps/caps, lumen patency, running infusions, and rates.',
-    tags: ['ward 208', 'ccu', 'cvc', 'central line', 'lines', 'lumens', 'patency', 'infusions'],
+    categoryLabel: 'Critical Care (CCU)',
+    description: 'Critical Care (CCU): Central Venous Catheter (CVC) type/site, lumens, dressing integrity, infection signs, clamps/caps, lumen patency, running infusions, and rates.',
+    tags: ['critical care', 'ccu', 'cvc', 'central line', 'lines', 'lumens', 'patency', 'infusions'],
     fields: [
       { id: 'typeSite', label: 'CVC Type & Site', defaultValue: 'Triple lumen catheter, right internal jugular (RIJ)', options: ['Triple lumen catheter, right internal jugular (RIJ)', 'Dual lumen PICC, right basilic vein', 'Triple lumen catheter, right subclavian', 'Quadruple lumen CVC, right internal jugular'] },
       { id: 'lumens', label: 'Number of Lumens', defaultValue: '3', options: ['1', '2', '3', '4'] },
@@ -558,12 +558,12 @@ Peripheral IV cannula at [__________]. Site assessed for pain, redness, warmth, 
       { id: 'lumenDetails', label: 'Lumens & Rates', defaultValue: 'Medial: Norepinephrine @ 0.06 mcg/kg/min; Distal: CVP monitoring; Proximal: Maintenance fluids @ 50 mL/hr', options: ['Medial: Norepinephrine @ 0.06 mcg/kg/min; Distal: CVP monitoring; Proximal: Maintenance fluids @ 50 mL/hr', 'Distal: Blood sampling / fluids; Proximal: Sedation infusion', 'All lumens patent, flushed and saline/heparin locked'] },
     ],
     formats: {
-      narrative: `WARD 208 - CCU
+      narrative: `CRITICAL CARE UNIT (CCU)
 Lines — Central Venous Catheter
 
 CVC type/site [__________], lumens [____]. Site/dressing assessed: clean/dry/intact or finding [__________]; erythema, tenderness, discharge, bleeding or swelling [__________]. line secured, clamps/caps/connections checked, lumen patency assessed as appropriate [__________]. Infusions [__________] via lumen [__________], rates [__________].`,
 
-      concise: `WARD 208 CCU • CENTRAL VENOUS CATHETER (CVC) ASSESSMENT:
+      concise: `CRITICAL CARE (CCU) • CENTRAL VENOUS CATHETER (CVC) ASSESSMENT:
 • Device & Site: CVC type/site: [__________] | Lumens: [____].
 • Site & Dressing: Dressing assessed: clean/dry/intact [or finding: [__________]]. Erythema, tenderness, discharge, bleeding or swelling: [__________].
 • Line Security & Patency: Line secured, clamps/caps/connections checked; lumen patency assessed: [__________].
@@ -587,11 +587,11 @@ CVC type/site [__________], lumens [____]. Site/dressing assessed: clean/dry/int
   // 13. DRAIN CARE
   {
     id: 'ccu-drain-care',
-    title: 'CCU: Drain Care',
+    title: 'Critical Care: Drain Care',
     category: 'ccu',
-    categoryLabel: 'Ward 208 CCU',
-    description: 'Ward 208 CCU: Surgical drain assessment, insertion site, dressing, patency, output volume/color/consistency, tubing integrity, I&O logging, and patient tolerance.',
-    tags: ['ward 208', 'ccu', 'drain care', 'surgical drain', 'output', 'dressing', 'patency'],
+    categoryLabel: 'Critical Care (CCU)',
+    description: 'Critical Care (CCU): Surgical drain assessment, insertion site, dressing, patency, output volume/color/consistency, tubing integrity, I&O logging, and patient tolerance.',
+    tags: ['critical care', 'ccu', 'drain care', 'surgical drain', 'output', 'dressing', 'patency'],
     isProcedure: true,
     procedureCategory: 'wound',
     procedureCategoryLabel: 'Surgical Drains & Tubes',
@@ -602,12 +602,12 @@ CVC type/site [__________], lumens [____]. Site/dressing assessed: clean/dry/int
       { id: 'consistency', label: 'Consistency', defaultValue: 'thin', options: ['thin', 'moderately thick', 'viscous'] },
     ],
     formats: {
-      narrative: `WARD 208 - CCU
+      narrative: `CRITICAL CARE UNIT (CCU)
 Drain Care:
 
 Drain assessed and maintained in place as ordered. Insertion site checked for redness, swelling, leakage or signs of infection. Dressing clean, dry and intact / [__________]. Drain secured, patent and functioning properly. Drainage noted: amount [____] mL, color [__________], consistency [__________]. No kinking, blockage or dislodgement noted. Drainage output monitored and documented in the intake and output chart. Patient tolerated drain care well.`,
 
-      concise: `WARD 208 CCU • SURGICAL DRAIN CARE NOTE:
+      concise: `CRITICAL CARE (CCU) • SURGICAL DRAIN CARE NOTE:
 • Device & Site: Drain assessed and maintained in place per orders. Insertion site inspected for erythema, edema, leakage, or infection.
 • Dressing & Security: Dressing clean, dry, and intact [__________]. Drain secured, patent, and functioning properly.
 • Drainage Characteristics: Amount: [____] mL | Color: [__________] | Consistency: [__________].
@@ -632,11 +632,11 @@ Drain assessed and maintained in place as ordered. Insertion site checked for re
   // 14. BED BATH
   {
     id: 'ccu-bed-bath',
-    title: 'CCU: Bed Bath',
+    title: 'Critical Care: Bed Bath',
     category: 'ccu',
-    categoryLabel: 'Ward 208 CCU',
-    description: 'Ward 208 CCU: Complete assisted bed bath, hair/oral/perineal/back/foot/eye care, CBD care, bony prominence inspection, Braden score, clean linens, and repositioning.',
-    tags: ['ward 208', 'ccu', 'bed bath', 'hygiene', 'cbd care', 'catheter care', 'braden', 'skin check', 'turning'],
+    categoryLabel: 'Critical Care (CCU)',
+    description: 'Critical Care (CCU): Complete assisted bed bath, hair/oral/perineal/back/foot/eye care, CBD care, bony prominence inspection, Braden score, clean linens, and repositioning.',
+    tags: ['critical care', 'ccu', 'bed bath', 'hygiene', 'cbd care', 'catheter care', 'braden', 'skin check', 'turning'],
     isProcedure: true,
     procedureCategory: 'bedside',
     procedureCategoryLabel: 'Bedside Care & Skin',
@@ -646,12 +646,12 @@ Drain assessed and maintained in place as ordered. Insertion site checked for re
       { id: 'hob', label: 'Head of Bed (°)', defaultValue: '30-45', options: ['30-45', '30', '45'] },
     ],
     formats: {
-      narrative: `WARD 208 - CCU
+      narrative: `CRITICAL CARE UNIT (CCU)
 Bed Bath
 
 Complete bed bath provided with full assistance, including hair shampooing, oral hygiene, perineal care, back care, foot care , eye care and skin moisturizing. Patient’s level of consciousness, cooperation, and ability to participate in hygiene care assessed. Privacy and dignity maintained throughout the procedure. CBD care performed using aseptic technique, and catheter insertion site assessed for redness, swelling, discharge, or other signs of infection. Full skin assessment performed, including inspection of bony prominences (sacrum, coccyx, heels, elbows, hips, and greater trochanters) for redness, pressure injuries, or skin breakdown. Skin condition documented([--------]), and Braden Scale reassessed according to policy. Clean bed linens and patient gown changed. Patient repositioned using appropriate moving and handling techniques, with pressure areas offloaded and pillows provided for support. Head of bed elevated as clinically appropriate.`,
 
-      concise: `WARD 208 CCU • COMPLETE BED BATH & HYGIENE CARE:
+      concise: `CRITICAL CARE (CCU) • COMPLETE BED BATH & HYGIENE CARE:
 • Hygiene Care Provided: Complete bed bath provided with full assistance: hair shampooing, oral hygiene, perineal care, back care, foot care, eye care, and skin moisturizing.
 • Dignity & Cooperation: Privacy and dignity maintained; patient level of consciousness and cooperation assessed.
 • Catheter (CBD) Care: Performed using aseptic technique; meatus assessed: no redness, swelling, or discharge noted.
@@ -677,11 +677,11 @@ Complete bed bath provided with full assistance, including hair shampooing, oral
   // 15. CCU ADMISSION NOTE FOR VENTILATOR PATIENT
   {
     id: 'ccu-admission-ventilator-patient',
-    title: 'CCU: Admission Note for Ventilator Patient (Comprehensive)',
+    title: 'Critical Care: Admission Note for Ventilator Patient (Comprehensive)',
     category: 'ccu',
-    categoryLabel: 'Ward 208 CCU',
-    description: 'Ward 208 CCU: Comprehensive critical care admission record for ventilated patients received from AE: vent settings, neuro, transfer to bed, monitoring, lines/infusions, clinical scores, and doctor notification.',
-    tags: ['ward 208', 'ccu', 'admission', 'ventilator', 'ett', 'critical care', 'morse fall', 'must', 'aews', 'braden'],
+    categoryLabel: 'Critical Care (CCU)',
+    description: 'Critical Care (CCU): Comprehensive critical care admission record for ventilated patients received from AE: vent settings, neuro, transfer to bed, monitoring, lines/infusions, clinical scores, and doctor notification.',
+    tags: ['critical care', 'ccu', 'admission', 'ventilator', 'ett', 'critical care', 'morse fall', 'must', 'aews', 'braden'],
     isProcedure: true,
     procedureCategory: 'respiratory',
     procedureCategoryLabel: 'Critical Care Admission',
@@ -705,7 +705,7 @@ Complete bed bath provided with full assistance, including hair shampooing, oral
       { id: 'bradenScore', label: 'Braden Assessment Score', defaultValue: '12 (High risk)', options: ['10 (Very high risk)', '12 (High risk)', '14 (Moderate risk)'] },
     ],
     formats: {
-      narrative: `WARD 208 - CCU
+      narrative: `CRITICAL CARE UNIT (CCU)
 CCU Admission Note for Ventilator patient
 
 Patient: Mr. [X] Received From: Accident & Emergency (AE) Mode of Transfer: Stretcher, accompanied by Doctor, Staff Nurse, Medical Service Aid, and Respiratory Therapist with portable ventilator &Cardiac monitor.
@@ -776,7 +776,7 @@ Additional documentation for Psychiatric pts
 * Hallucinated or not: [__________]
 * Cooperation with care: [__________]`,
 
-      concise: `WARD 208 CCU • VENTILATOR PATIENT ADMISSION NOTE:
+      concise: `CRITICAL CARE (CCU) • VENTILATOR PATIENT ADMISSION NOTE:
 • Reception & Handover: Received from Accident & Emergency (AE) via stretcher accompanied by MD, RN, MSA, and RT with portable vent & monitor. Transferred safely to CCU bed.
 • Ventilator Settings: Mode: [....] | FiO2: […] | TV: […] | RR: […] | PEEP: […] | PS: […] | SpO2: […].
 • Neurological: Patient [conscious but sedated / unconscious] | GCS score: [.....].
@@ -805,11 +805,11 @@ Additional documentation for Psychiatric pts
   // 16. ADDITIONAL DOCUMENTATION FOR ACUTE STROKE PTS
   {
     id: 'ccu-acute-stroke-documentation',
-    title: 'CCU: Additional Documentation for Acute Stroke Pts',
+    title: 'Critical Care: Additional Documentation for Acute Stroke Pts',
     category: 'ccu',
-    categoryLabel: 'Ward 208 CCU',
-    description: 'Ward 208 CCU: Targeted neurological documentation for acute stroke patients: LOC, GCS, orientation, speech, facial symmetry, pupils, limb strength, and sensation.',
-    tags: ['ward 208', 'ccu', 'stroke', 'acute stroke', 'neuro', 'gcs', 'facial symmetry', 'pupils', 'limb strength', 'sensation'],
+    categoryLabel: 'Critical Care (CCU)',
+    description: 'Critical Care (CCU): Targeted neurological documentation for acute stroke patients: LOC, GCS, orientation, speech, facial symmetry, pupils, limb strength, and sensation.',
+    tags: ['critical care', 'ccu', 'stroke', 'acute stroke', 'neuro', 'gcs', 'facial symmetry', 'pupils', 'limb strength', 'sensation'],
     fields: [
       { id: 'loc', label: 'Level of Consciousness', defaultValue: 'Alert', options: ['Alert', 'Lethargic', 'Obtunded', 'Stuporous', 'Comatose'] },
       { id: 'gcs', label: 'GCS (/15)', defaultValue: '14/15 (E4 V4 M6)', options: ['15/15', '14/15 (E4 V4 M6)', '13/15', '11/15', '9/15', '7/15'] },
@@ -821,7 +821,7 @@ Additional documentation for Psychiatric pts
       { id: 'sensation', label: 'Sensation', defaultValue: 'Decreased light touch sensation over right arm and leg', options: ['Intact bilaterally to light touch and pinprick', 'Decreased light touch sensation over right arm and leg', 'Absent sensation on left hemibody', 'Intact bilaterally'] },
     ],
     formats: {
-      narrative: `WARD 208 - CCU
+      narrative: `CRITICAL CARE UNIT (CCU)
 Additional documentation for acute stroke pts
 
 * Level of consciousness: [__________]
@@ -833,7 +833,7 @@ Additional documentation for acute stroke pts
 * Limb strength: [__________]
 * Sensation: [__________]`,
 
-      concise: `WARD 208 CCU • ACUTE STROKE NEUROLOGICAL ASSESSMENT:
+      concise: `CRITICAL CARE (CCU) • ACUTE STROKE NEUROLOGICAL ASSESSMENT:
 • Level of Consciousness: [__________]
 • GCS Score: [____/15]
 • Orientation: [__________]
@@ -860,11 +860,11 @@ Additional documentation for acute stroke pts
   // 17. ADDITIONAL DOCUMENTATION FOR PSYCHIATRIC PTS
   {
     id: 'ccu-psychiatric-patient-documentation',
-    title: 'CCU: Additional Documentation for Psychiatric Pts',
+    title: 'Critical Care: Additional Documentation for Psychiatric Pts',
     category: 'ccu',
-    categoryLabel: 'Ward 208 CCU',
-    description: 'Ward 208 CCU: Targeted psychiatric assessment: LOC, orientation, behavior, speech, hallucination screen, and cooperation with care.',
-    tags: ['ward 208', 'ccu', 'psychiatric', 'mental health', 'behavior', 'speech', 'hallucinations', 'cooperation'],
+    categoryLabel: 'Critical Care (CCU)',
+    description: 'Critical Care (CCU): Targeted psychiatric assessment: LOC, orientation, behavior, speech, hallucination screen, and cooperation with care.',
+    tags: ['critical care', 'ccu', 'psychiatric', 'mental health', 'behavior', 'speech', 'hallucinations', 'cooperation'],
     fields: [
       { id: 'loc', label: 'Level of Consciousness', defaultValue: 'Alert', options: ['Alert', 'Lethargic', 'Hyper-alert / hypervigilant', 'Fluctuating'] },
       { id: 'orientation', label: 'Oriented / Disoriented', defaultValue: 'Oriented to person and place, disoriented to time', options: ['Oriented x 4', 'Oriented to person and place, disoriented to time', 'Disoriented to all spheres'] },
@@ -874,7 +874,7 @@ Additional documentation for acute stroke pts
       { id: 'cooperation', label: 'Cooperation with Care', defaultValue: 'Cooperative with nursing assessments and oral medications', options: ['Cooperative with nursing assessments and oral medications', 'Intermittently cooperative; requires re-direction', 'Refusing medications and procedures', 'Requires 1:1 constant observation for safety'] },
     ],
     formats: {
-      narrative: `WARD 208 - CCU
+      narrative: `CRITICAL CARE UNIT (CCU)
 Additional documentation for Psychiatric pts
 
 * Level of consciousness: [__________]
@@ -884,7 +884,7 @@ Additional documentation for Psychiatric pts
 * Hallucinated or not: [__________]
 * Cooperation with care: [__________]`,
 
-      concise: `WARD 208 CCU • PSYCHIATRIC & BEHAVIORAL ASSESSMENT:
+      concise: `CRITICAL CARE (CCU) • PSYCHIATRIC & BEHAVIORAL ASSESSMENT:
 • Level of Consciousness: [__________]
 • Orientation: [__________]
 • Behaviour: [__________]

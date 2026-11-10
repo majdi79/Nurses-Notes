@@ -15,9 +15,14 @@ export function compileNoteText(
       if (values[key] !== undefined && values[key].trim() !== '') {
         return values[key];
       }
-      // If field definition exists, use its defaultValue or placeholder
-      const field = template.fields.find(f => f.id === key);
-      return field?.defaultValue || `[${key}]`;
+      if (key === 'time') {
+        return `[____]`;
+      }
+      if (key === 'pain') {
+        return `[____/10]`;
+      }
+      // Keep note fields empty by default (preserving brackets for editing)
+      return `[__________]`;
     });
   };
 

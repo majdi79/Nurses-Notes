@@ -42,6 +42,8 @@ import {
   Calculator,
   AlertCircle,
   CornerDownRight,
+  Eraser,
+  Undo2,
 } from 'lucide-react';
 import { NoteTemplate, isTemplateProcedure, getTemplateProcedureCategory } from '../data/templates';
 import {
@@ -128,6 +130,9 @@ export const NoteStudio: React.FC<NoteStudioProps> = ({
   const [isAdvancedFieldsOpen, setIsAdvancedFieldsOpen] = useState(false);
   const [isQuickOptionsOpen, setIsQuickOptionsOpen] = useState(false);
   const [noteFontSize, setNoteFontSize] = useState<'sm' | 'base' | 'lg'>('base');
+  const [isClearConfirmOpen, setIsClearConfirmOpen] = useState(false);
+  const [lastClearedText, setLastClearedText] = useState<string | null>(null);
+  const [undoToast, setUndoToast] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const theme = THEMES[colorTheme];
@@ -250,6 +255,32 @@ export const NoteStudio: React.FC<NoteStudioProps> = ({
     document.body.removeChild(element);
   };
 
+  const handleClearToBlank = () => {
+    setLastClearedText(noteText);
+    onTextChange('');
+    setIsClearConfirmOpen(false);
+    setUndoToast('Note cleared to blank slate');
+    setTimeout(() => setUndoToast(null), 7000);
+  };
+
+  const handleResetToTemplate = () => {
+    setLastClearedText(noteText);
+    onResetDefaults();
+    setIsClearConfirmOpen(false);
+    setUndoToast('Note reset to template defaults');
+    setTimeout(() => setUndoToast(null), 7000);
+  };
+
+  const handleUndoClear = () => {
+    if (lastClearedText !== null) {
+      onTextChange(lastClearedText);
+      setLastClearedText(null);
+      setUndoToast(null);
+      setStampFeedback('Restored note text');
+      setTimeout(() => setStampFeedback(null), 1800);
+    }
+  };
+
   const wordCount = noteText.trim().split(/\s+/).filter(Boolean).length;
   const charCount = noteText.length;
 
@@ -365,6 +396,18 @@ export const NoteStudio: React.FC<NoteStudioProps> = ({
               <Printer className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-600 dark:text-slate-400" />
               <span className="hidden sm:inline">Print Note</span>
               <span className="sm:hidden">Print</span>
+            </button>
+
+            {/* Clear Note Action Button */}
+            <button
+              type="button"
+              onClick={() => setIsClearConfirmOpen(true)}
+              className="flex items-center justify-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/60 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800/80 shadow-2xs transition-colors shrink-0"
+              title="Clear or reset current note with confirmation"
+            >
+              <Eraser className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-rose-600 dark:text-rose-400" />
+              <span className="hidden sm:inline">Clear Note</span>
+              <span className="sm:hidden">Clear</span>
             </button>
 
             {/* Font Size Adjuster */}
@@ -1084,10 +1127,133 @@ export const NoteStudio: React.FC<NoteStudioProps> = ({
                 <Download className="w-3.5 h-3.5 text-slate-400" />
                 <span>Save .txt</span>
               </button>
+              <button
+                type="button"
+                onClick={() => setIsClearConfirmOpen(true)}
+                className="text-rose-600 dark:text-rose-400 hover:text-rose-800 dark:hover:text-rose-300 flex items-center gap-1 transition-colors font-medium ml-1"
+                title="Clear or reset this clinical note"
+              >
+                <Eraser className="w-3.5 h-3.5 text-rose-500" />
+                <span>Clear Note</span>
+              </button>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Clarification Action Dialog for Clear Note */}
+      {isClearConfirmOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in"
+        >
+          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full border border-slate-200 dark:border-slate-800 shadow-2xl p-5 space-y-4">
+            <div className="flex items-start justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-rose-100 dark:bg-rose-950/70 border border-rose-200 dark:border-rose-800 flex items-center justify-center shrink-0">
+                  <AlertTriangle className="w-5 h-5 text-rose-600 dark:text-rose-400" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                    Clarify Clear Note Action
+                  </h3>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                    {template.title} ({wordCount} words, {charCount} chars)
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsClearConfirmOpen(false)}
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded-md"
+              >
+                ✕
+              </button>
+            </div>
+
+            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+              How would you like to clear this clinical note? Please select the intended action:
+            </p>
+
+            <div className="space-y-2.5 pt-1">
+              {/* Option 1: Clear to Blank Slate */}
+              <button
+                type="button"
+                onClick={handleClearToBlank}
+                className="w-full p-3 rounded-xl border border-rose-200 dark:border-rose-800/80 bg-rose-50/70 dark:bg-rose-950/30 hover:bg-rose-100 dark:hover:bg-rose-900/40 text-left transition-all group flex items-start gap-3"
+              >
+                <div className="w-8 h-8 rounded-lg bg-rose-600 text-white flex items-center justify-center shrink-0 shadow-2xs group-hover:scale-105 transition-transform">
+                  <Eraser className="w-4 h-4" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-xs font-bold text-rose-900 dark:text-rose-200 flex items-center justify-between">
+                    <span>Clear Entire Note (Blank Slate)</span>
+                    <span className="text-[10px] font-normal text-rose-600 dark:text-rose-400">Empty Page</span>
+                  </div>
+                  <p className="text-[11px] text-rose-700/80 dark:text-rose-300/80 mt-0.5 leading-snug">
+                    Erases all text completely to start with a blank editor for custom documentation or external pasting.
+                  </p>
+                </div>
+              </button>
+
+              {/* Option 2: Reset to Template Defaults */}
+              <button
+                type="button"
+                onClick={handleResetToTemplate}
+                className="w-full p-3 rounded-xl border border-blue-200 dark:border-blue-800/80 bg-blue-50/70 dark:bg-blue-950/30 hover:bg-blue-100 dark:hover:bg-blue-900/40 text-left transition-all group flex items-start gap-3"
+              >
+                <div className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-2xs group-hover:scale-105 transition-transform">
+                  <RotateCcw className="w-4 h-4" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-xs font-bold text-blue-900 dark:text-blue-200 flex items-center justify-between">
+                    <span>Reset to Template Standard</span>
+                    <span className="text-[10px] font-normal text-blue-600 dark:text-blue-400">Default Baseline</span>
+                  </div>
+                  <p className="text-[11px] text-blue-700/80 dark:text-blue-300/80 mt-0.5 leading-snug">
+                    Reverts manual text edits and re-compiles the official template phrasing with standard baseline variables.
+                  </p>
+                </div>
+              </button>
+            </div>
+
+            <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setIsClearConfirmOpen(false)}
+                className="px-3.5 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg transition-colors"
+              >
+                Cancel / Keep Note
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Undo Toast Notification */}
+      {undoToast && (
+        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-950 px-4 py-2 rounded-xl shadow-xl border border-slate-700 dark:border-slate-300 flex items-center gap-3 animate-fade-in text-xs font-medium">
+          <span>{undoToast}</span>
+          {lastClearedText !== null && (
+            <button
+              type="button"
+              onClick={handleUndoClear}
+              className="px-2 py-0.5 rounded bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs inline-flex items-center gap-1 shadow-2xs transition-colors"
+            >
+              <Undo2 className="w-3 h-3" />
+              <span>Undo</span>
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={() => setUndoToast(null)}
+            className="text-slate-400 hover:text-white dark:hover:text-slate-900 font-bold ml-1"
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       {/* Printable Clinical Note Portal */}
       {typeof document !== 'undefined' &&

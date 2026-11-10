@@ -1,3 +1,5 @@
+import { CCU_TEMPLATES } from './ccuTemplates';
+
 export interface VariableField {
   id: string;
   label: string;
@@ -25,7 +27,7 @@ export interface NoteFormatContent {
 export interface NoteTemplate {
   id: string;
   title: string;
-  category: 'routine' | 'vascular' | 'wound' | 'respiratory' | 'gigu' | 'emergency' | 'custom';
+  category: 'routine' | 'vascular' | 'wound' | 'respiratory' | 'gigu' | 'emergency' | 'custom' | 'ccu';
   categoryLabel: string;
   description: string;
   tags: string[];
@@ -41,6 +43,7 @@ export interface NoteTemplate {
 
 export const CATEGORIES = [
   { id: 'all', label: 'All Templates' },
+  { id: 'ccu', label: 'Ward 208 CCU' },
   { id: 'routine', label: 'Routine & Assessments' },
   { id: 'vascular', label: 'Vascular & Infusions' },
   { id: 'wound', label: 'Wound & Skin Care' },
@@ -2272,6 +2275,7 @@ export const INITIAL_TEMPLATES: NoteTemplate[] = [
       concise: 'ACUTE DYSPNEA / RESPIRATORY DISTRESS NOTE ({time}):\n• Presentation & Speech Dyspnea: {presentingDistress}\n• Work of Breathing & Vitals: {physicalWorkOfBreathing}\n• Lung Sounds & Sputum: {lungSoundsAuscultation}\n• Immediate Positioning & O2 Escalation: {immediateBedsideAction}\n• STAT Diagnostics & Response: {statMedsDiagnosticsResponse}',
     },
   },
+  ...CCU_TEMPLATES,
 ];
 
 export function isDefaultTemplateId(id: string): boolean {

@@ -77,6 +77,7 @@ const CATEGORY_ICONS: Record<string, React.ReactNode> = {
   respiratory: <Wind className="w-3 h-3 text-sky-500" />,
   gigu: <Activity className="w-3 h-3 text-emerald-500" />,
   emergency: <AlertTriangle className="w-3 h-3 text-rose-500" />,
+  ccu: <HeartPulse className="w-3 h-3 text-rose-600" />,
   custom: <Sparkles className="w-3 h-3 text-indigo-500" />,
 };
 
@@ -319,6 +320,9 @@ export const TemplateSelector: React.FC<TemplateSelectorProps> = ({
                 Topics:
               </span>
               {[
+                { label: 'Ward 208 CCU', query: 'ccu', icon: <HeartPulse className="w-2.5 h-2.5 text-rose-600" /> },
+                { label: 'Ventilated CCU', query: 'ventilated', icon: <Wind className="w-2.5 h-2.5 text-sky-500" /> },
+                { label: 'Repositioning', query: 'repositioning', icon: <RotateCcw className="w-2.5 h-2.5 text-teal-600" /> },
                 { label: 'Shift Receiving', query: 'receiving', icon: <UserCheck className="w-2.5 h-2.5 text-blue-600" /> },
                 { label: 'Pain & Analgesia', query: 'pain', icon: <HeartPulse className="w-2.5 h-2.5 text-amber-500" /> },
                 { label: 'Fever Spike', query: 'fever', icon: <Flame className="w-2.5 h-2.5 text-rose-500" /> },

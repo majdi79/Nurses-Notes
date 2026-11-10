@@ -224,6 +224,13 @@ export default function App() {
     }
   }, [patientSlots, activeSlotId]);
 
+  // Ensure activeSlotId always points to an existing slot
+  useEffect(() => {
+    if (patientSlots.length > 0 && !patientSlots.some((s) => s.id === activeSlotId)) {
+      setActiveSlotId(patientSlots[0].id);
+    }
+  }, [patientSlots, activeSlotId]);
+
   // Save favorites to localStorage
   useEffect(() => {
     try {
@@ -374,33 +381,104 @@ export default function App() {
   };
 
   const handleAddSlot = () => {
-    const newNum = patientSlots.length + 1;
+    if (patientSlots.length >= 8) {
+      setToastMessage('Maximum 8 bed slots reached');
+      setTimeout(() => setToastMessage(null), 2000);
+      return;
+    }
+
+    // Determine smart next bed label (e.g. Bed 301, Bed 302, etc.)
+    const existingLabels = new Set(patientSlots.map((s) => s.bedLabel));
+    let nextNum = patientSlots.length + 1;
+    let candidateLabel = `Bed 30${nextNum}`;
+    while (existingLabels.has(candidateLabel)) {
+      nextNum++;
+      candidateLabel = `Bed 30${nextNum}`;
+    }
+
+    // Default fields for the active template
+    const defaultFields: Record<string, string> = {};
+    selectedTemplate.fields.forEach((f) => {
+      defaultFields[f.id] = f.defaultValue;
+    });
+
+    const newId = `slot_${Date.now()}`;
     const newSlot: PatientSlot = {
-      id: `slot_${Date.now()}`,
-      bedLabel: `Bed 30${newNum}`,
+      id: newId,
+      bedLabel: candidateLabel,
       templateId: selectedTemplate.id,
-      fieldValues: {},
+      fieldValues: defaultFields,
       manualText: null,
       format: activeFormat,
       lastUpdated: Date.now(),
     };
-    setPatientSlots((prev) => [...prev, newSlot]);
-    handleSelectSlot(newSlot.id);
+
+    // 1. Snapshot current active slot and append the new slot
+    const updatedSlots = patientSlots.map((s) => {
+      if (s.id === activeSlotId) {
+        return {
+          ...s,
+          templateId: selectedTemplate.id,
+          fieldValues,
+          manualText,
+          format: activeFormat,
+          lastUpdated: Date.now(),
+        };
+      }
+      return s;
+    });
+    updatedSlots.push(newSlot);
+
+    // 2. Atomically activate new slot and initialize workspace
+    isSwitchingSlotRef.current = true;
+    setPatientSlots(updatedSlots);
+    setActiveSlotId(newId);
+    setFieldValues(defaultFields);
+    setManualText(null);
+    setToastMessage(`Added and switched to ${candidateLabel}`);
+    setTimeout(() => setToastMessage(null), 1800);
   };
 
   const handleRemoveSlot = (slotId: string) => {
     if (patientSlots.length <= 1) return;
     const remaining = patientSlots.filter((s) => s.id !== slotId);
-    setPatientSlots(remaining);
+    if (remaining.length === 0) return;
+
     if (activeSlotId === slotId) {
-      handleSelectSlot(remaining[0].id);
+      const nextSlot = remaining[0];
+      isSwitchingSlotRef.current = true;
+      const targetTemplate = allTemplates.find((t) => t.id === nextSlot.templateId) || INITIAL_TEMPLATES[0];
+      setSelectedTemplate(targetTemplate);
+
+      if (nextSlot.fieldValues && Object.keys(nextSlot.fieldValues).length > 0) {
+        setFieldValues(nextSlot.fieldValues);
+      } else {
+        const defs: Record<string, string> = {};
+        targetTemplate.fields.forEach((f) => {
+          defs[f.id] = f.defaultValue;
+        });
+        setFieldValues(defs);
+      }
+
+      setManualText(nextSlot.manualText);
+      setActiveFormat(nextSlot.format || 'concise');
+      setActiveSlotId(nextSlot.id);
+      setToastMessage(`Removed bed. Switched to ${nextSlot.bedLabel}`);
+      setTimeout(() => setToastMessage(null), 1800);
+    } else {
+      setToastMessage('Bed slot removed');
+      setTimeout(() => setToastMessage(null), 1500);
     }
+
+    setPatientSlots(remaining);
   };
 
   const handleRenameSlot = (slotId: string, newLabel: string) => {
     setPatientSlots((prev) =>
       prev.map((s) => (s.id === slotId ? { ...s, bedLabel: newLabel } : s))
     );
+    setToastMessage(`Renamed to ${newLabel}`);
+    setTimeout(() => setToastMessage(null), 1500);
   };
 
   const handleSelectTemplate = (template: NoteTemplate) => {
